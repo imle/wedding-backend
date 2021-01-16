@@ -1,29 +1,19 @@
-language: go
-
-go:
-  - "1.15"
-
-go_import_path: wedding
-
-services:
-  - docker
-
 jobs:
   include:
     - stage: build docker image
+      services:
+        - docker
       script:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker build . -t wedding-backend
         - docker images
         - docker tag wedding-backend $DOCKER_USERNAME/wedding-backend
         - docker push $DOCKER_USERNAME/wedding-backend
-    - stage: kubectl
+    - stage: redeploy
       script:
         - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
         - chmod +x ./kubectl
         - sudo mv ./kubectl /usr/local/bin/kubectl
         - mkdir ${HOME}/.kube
         - echo "$KUBE_CONFIG" | base64 --decode > ${HOME}/.kube/config
-    - stage: kubectl
-      script:
         - kubectl -n "$DEPLOY_NAMESPACE" delete pod -l "$DEPLOY_LABEL"
