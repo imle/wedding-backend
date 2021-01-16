@@ -1,4 +1,6 @@
-language: golang
+language: go
+
+go_import_path: wedding
 
 services:
   - docker
