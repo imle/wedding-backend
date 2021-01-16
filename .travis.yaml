@@ -1,0 +1,14 @@
+language: node
+
+services:
+  - docker
+
+jobs:
+  include:
+    - stage: build docker image
+      script:
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker build . -t wedding-backend
+        - docker images
+        - docker tag wedding-backend $DOCKER_USERNAME/wedding-backend
+        - docker push $DOCKER_USERNAME/wedding-backend
