@@ -69,7 +69,7 @@ func main() {
 				Name:        "pg-sslmode",
 				Destination: &pgSSLMode,
 				EnvVars:     []string{"PG_SSL_MODE"},
-				Value:       "disabled",
+				Value:       "disable",
 			},
 			&cli.BoolFlag{
 				Name:  "generate",
