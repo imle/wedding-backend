@@ -192,8 +192,8 @@ func main() {
 			}
 
 			// Register auth handlers.
-			router.POST("/login", authMiddleware.LoginHandler)
-			auth := router.Group("/auth")
+			router.POST("/api/login", authMiddleware.LoginHandler)
+			auth := router.Group("/api/auth")
 			// Refresh time can be longer than token timeout
 			auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 
