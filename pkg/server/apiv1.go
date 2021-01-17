@@ -1,6 +1,8 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
 	"wedding/ent"
@@ -29,7 +31,7 @@ func (api *APIv1) QueryByInviteeForParty(c *gin.Context) {
 	name := c.Query("query")
 
 	if len(name) < 3 {
-		c.JSON(200, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"error": "Unable to find your invite. Please try again or contact the Bride and Groom.",
 		})
 		return
@@ -42,7 +44,7 @@ func (api *APIv1) QueryByInviteeForParty(c *gin.Context) {
 		WithInvitees().
 		AllX(c)
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"matches": matches,
 	})
 }
@@ -56,11 +58,11 @@ func (api *APIv1) GetInviteeByCode(c *gin.Context) {
 		Only(c)
 
 	if result == nil {
-		c.Status(404)
+		c.Status(http.StatusNotFound)
 		return
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"party": result,
 	})
 }

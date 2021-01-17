@@ -8,6 +8,19 @@ import (
 )
 
 var (
+	// BackroomUsersColumns holds the columns for the "backroom_users" table.
+	BackroomUsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "username", Type: field.TypeString, Unique: true, Size: 20},
+		{Name: "password", Type: field.TypeString, Size: 64},
+	}
+	// BackroomUsersTable holds the schema information for the "backroom_users" table.
+	BackroomUsersTable = &schema.Table{
+		Name:        "backroom_users",
+		Columns:     BackroomUsersColumns,
+		PrimaryKey:  []*schema.Column{BackroomUsersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+	}
 	// InviteesColumns holds the columns for the "invitees" table.
 	InviteesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -44,6 +57,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		BackroomUsersTable,
 		InviteesTable,
 		InviteePartiesTable,
 	}

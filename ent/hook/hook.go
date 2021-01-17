@@ -8,6 +8,19 @@ import (
 	"wedding/ent"
 )
 
+// The BackroomUserFunc type is an adapter to allow the use of ordinary
+// function as BackroomUser mutator.
+type BackroomUserFunc func(context.Context, *ent.BackroomUserMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BackroomUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.BackroomUserMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BackroomUserMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The InviteeFunc type is an adapter to allow the use of ordinary
 // function as Invitee mutator.
 type InviteeFunc func(context.Context, *ent.InviteeMutation) (ent.Value, error)

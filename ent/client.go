@@ -9,6 +9,7 @@ import (
 
 	"wedding/ent/migrate"
 
+	"wedding/ent/backroomuser"
 	"wedding/ent/invitee"
 	"wedding/ent/inviteeparty"
 
@@ -22,6 +23,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// BackroomUser is the client for interacting with the BackroomUser builders.
+	BackroomUser *BackroomUserClient
 	// Invitee is the client for interacting with the Invitee builders.
 	Invitee *InviteeClient
 	// InviteeParty is the client for interacting with the InviteeParty builders.
@@ -39,6 +42,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.BackroomUser = NewBackroomUserClient(c.config)
 	c.Invitee = NewInviteeClient(c.config)
 	c.InviteeParty = NewInviteePartyClient(c.config)
 }
@@ -73,6 +77,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:          ctx,
 		config:       cfg,
+		BackroomUser: NewBackroomUserClient(cfg),
 		Invitee:      NewInviteeClient(cfg),
 		InviteeParty: NewInviteePartyClient(cfg),
 	}, nil
@@ -90,6 +95,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := config{driver: &txDriver{tx: tx, drv: c.driver}, log: c.log, debug: c.debug, hooks: c.hooks}
 	return &Tx{
 		config:       cfg,
+		BackroomUser: NewBackroomUserClient(cfg),
 		Invitee:      NewInviteeClient(cfg),
 		InviteeParty: NewInviteePartyClient(cfg),
 	}, nil
@@ -98,7 +104,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Invitee.
+//		BackroomUser.
 //		Query().
 //		Count(ctx)
 //
@@ -120,8 +126,97 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.BackroomUser.Use(hooks...)
 	c.Invitee.Use(hooks...)
 	c.InviteeParty.Use(hooks...)
+}
+
+// BackroomUserClient is a client for the BackroomUser schema.
+type BackroomUserClient struct {
+	config
+}
+
+// NewBackroomUserClient returns a client for the BackroomUser from the given config.
+func NewBackroomUserClient(c config) *BackroomUserClient {
+	return &BackroomUserClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `backroomuser.Hooks(f(g(h())))`.
+func (c *BackroomUserClient) Use(hooks ...Hook) {
+	c.hooks.BackroomUser = append(c.hooks.BackroomUser, hooks...)
+}
+
+// Create returns a create builder for BackroomUser.
+func (c *BackroomUserClient) Create() *BackroomUserCreate {
+	mutation := newBackroomUserMutation(c.config, OpCreate)
+	return &BackroomUserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of BackroomUser entities.
+func (c *BackroomUserClient) CreateBulk(builders ...*BackroomUserCreate) *BackroomUserCreateBulk {
+	return &BackroomUserCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for BackroomUser.
+func (c *BackroomUserClient) Update() *BackroomUserUpdate {
+	mutation := newBackroomUserMutation(c.config, OpUpdate)
+	return &BackroomUserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BackroomUserClient) UpdateOne(bu *BackroomUser) *BackroomUserUpdateOne {
+	mutation := newBackroomUserMutation(c.config, OpUpdateOne, withBackroomUser(bu))
+	return &BackroomUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BackroomUserClient) UpdateOneID(id int) *BackroomUserUpdateOne {
+	mutation := newBackroomUserMutation(c.config, OpUpdateOne, withBackroomUserID(id))
+	return &BackroomUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for BackroomUser.
+func (c *BackroomUserClient) Delete() *BackroomUserDelete {
+	mutation := newBackroomUserMutation(c.config, OpDelete)
+	return &BackroomUserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *BackroomUserClient) DeleteOne(bu *BackroomUser) *BackroomUserDeleteOne {
+	return c.DeleteOneID(bu.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *BackroomUserClient) DeleteOneID(id int) *BackroomUserDeleteOne {
+	builder := c.Delete().Where(backroomuser.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BackroomUserDeleteOne{builder}
+}
+
+// Query returns a query builder for BackroomUser.
+func (c *BackroomUserClient) Query() *BackroomUserQuery {
+	return &BackroomUserQuery{config: c.config}
+}
+
+// Get returns a BackroomUser entity by its id.
+func (c *BackroomUserClient) Get(ctx context.Context, id int) (*BackroomUser, error) {
+	return c.Query().Where(backroomuser.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BackroomUserClient) GetX(ctx context.Context, id int) *BackroomUser {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *BackroomUserClient) Hooks() []Hook {
+	return c.hooks.BackroomUser
 }
 
 // InviteeClient is a client for the Invitee schema.

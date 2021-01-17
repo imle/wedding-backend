@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"wedding/ent/backroomuser"
 	"wedding/ent/invitee"
 	"wedding/ent/inviteeparty"
 	"wedding/ent/schema"
@@ -12,6 +13,30 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	backroomuserFields := schema.BackroomUser{}.Fields()
+	_ = backroomuserFields
+	// backroomuserDescUsername is the schema descriptor for username field.
+	backroomuserDescUsername := backroomuserFields[0].Descriptor()
+	// backroomuser.UsernameValidator is a validator for the "username" field. It is called by the builders before save.
+	backroomuser.UsernameValidator = func() func(string) error {
+		validators := backroomuserDescUsername.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(username string) error {
+			for _, fn := range fns {
+				if err := fn(username); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// backroomuserDescPassword is the schema descriptor for password field.
+	backroomuserDescPassword := backroomuserFields[1].Descriptor()
+	// backroomuser.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
+	backroomuser.PasswordValidator = backroomuserDescPassword.Validators[0].(func(string) error)
 	inviteeFields := schema.Invitee{}.Fields()
 	_ = inviteeFields
 	// inviteeDescName is the schema descriptor for name field.
