@@ -99,6 +99,83 @@ func Name(v string) predicate.Invitee {
 	})
 }
 
+// IsChild applies equality check predicate on the "is_child" field. It's identical to IsChildEQ.
+func IsChild(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsChild), v))
+	})
+}
+
+// HasPlusOne applies equality check predicate on the "has_plus_one" field. It's identical to HasPlusOneEQ.
+func HasPlusOne(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHasPlusOne), v))
+	})
+}
+
+// PlusOneName applies equality check predicate on the "plus_one_name" field. It's identical to PlusOneNameEQ.
+func PlusOneName(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPlusOneName), v))
+	})
+}
+
+// Phone applies equality check predicate on the "phone" field. It's identical to PhoneEQ.
+func Phone(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPhone), v))
+	})
+}
+
+// Email applies equality check predicate on the "email" field. It's identical to EmailEQ.
+func Email(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmail), v))
+	})
+}
+
+// AddressLine1 applies equality check predicate on the "address_line_1" field. It's identical to AddressLine1EQ.
+func AddressLine1(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddressLine1), v))
+	})
+}
+
+// AddressLine2 applies equality check predicate on the "address_line_2" field. It's identical to AddressLine2EQ.
+func AddressLine2(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddressLine2), v))
+	})
+}
+
+// AddressCity applies equality check predicate on the "address_city" field. It's identical to AddressCityEQ.
+func AddressCity(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddressCity), v))
+	})
+}
+
+// AddressState applies equality check predicate on the "address_state" field. It's identical to AddressStateEQ.
+func AddressState(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddressState), v))
+	})
+}
+
+// AddressPostalCode applies equality check predicate on the "address_postal_code" field. It's identical to AddressPostalCodeEQ.
+func AddressPostalCode(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddressPostalCode), v))
+	})
+}
+
+// AddressCountry applies equality check predicate on the "address_country" field. It's identical to AddressCountryEQ.
+func AddressCountry(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddressCountry), v))
+	})
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Invitee {
 	return predicate.Invitee(func(s *sql.Selector) {
@@ -207,6 +284,1173 @@ func NameEqualFold(v string) predicate.Invitee {
 func NameContainsFold(v string) predicate.Invitee {
 	return predicate.Invitee(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldName), v))
+	})
+}
+
+// IsChildEQ applies the EQ predicate on the "is_child" field.
+func IsChildEQ(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsChild), v))
+	})
+}
+
+// IsChildNEQ applies the NEQ predicate on the "is_child" field.
+func IsChildNEQ(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldIsChild), v))
+	})
+}
+
+// IsChildIsNil applies the IsNil predicate on the "is_child" field.
+func IsChildIsNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldIsChild)))
+	})
+}
+
+// IsChildNotNil applies the NotNil predicate on the "is_child" field.
+func IsChildNotNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldIsChild)))
+	})
+}
+
+// HasPlusOneEQ applies the EQ predicate on the "has_plus_one" field.
+func HasPlusOneEQ(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHasPlusOne), v))
+	})
+}
+
+// HasPlusOneNEQ applies the NEQ predicate on the "has_plus_one" field.
+func HasPlusOneNEQ(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldHasPlusOne), v))
+	})
+}
+
+// PlusOneNameEQ applies the EQ predicate on the "plus_one_name" field.
+func PlusOneNameEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPlusOneName), v))
+	})
+}
+
+// PlusOneNameNEQ applies the NEQ predicate on the "plus_one_name" field.
+func PlusOneNameNEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPlusOneName), v))
+	})
+}
+
+// PlusOneNameIn applies the In predicate on the "plus_one_name" field.
+func PlusOneNameIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPlusOneName), v...))
+	})
+}
+
+// PlusOneNameNotIn applies the NotIn predicate on the "plus_one_name" field.
+func PlusOneNameNotIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPlusOneName), v...))
+	})
+}
+
+// PlusOneNameGT applies the GT predicate on the "plus_one_name" field.
+func PlusOneNameGT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPlusOneName), v))
+	})
+}
+
+// PlusOneNameGTE applies the GTE predicate on the "plus_one_name" field.
+func PlusOneNameGTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPlusOneName), v))
+	})
+}
+
+// PlusOneNameLT applies the LT predicate on the "plus_one_name" field.
+func PlusOneNameLT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPlusOneName), v))
+	})
+}
+
+// PlusOneNameLTE applies the LTE predicate on the "plus_one_name" field.
+func PlusOneNameLTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPlusOneName), v))
+	})
+}
+
+// PlusOneNameContains applies the Contains predicate on the "plus_one_name" field.
+func PlusOneNameContains(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldPlusOneName), v))
+	})
+}
+
+// PlusOneNameHasPrefix applies the HasPrefix predicate on the "plus_one_name" field.
+func PlusOneNameHasPrefix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldPlusOneName), v))
+	})
+}
+
+// PlusOneNameHasSuffix applies the HasSuffix predicate on the "plus_one_name" field.
+func PlusOneNameHasSuffix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldPlusOneName), v))
+	})
+}
+
+// PlusOneNameIsNil applies the IsNil predicate on the "plus_one_name" field.
+func PlusOneNameIsNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPlusOneName)))
+	})
+}
+
+// PlusOneNameNotNil applies the NotNil predicate on the "plus_one_name" field.
+func PlusOneNameNotNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPlusOneName)))
+	})
+}
+
+// PlusOneNameEqualFold applies the EqualFold predicate on the "plus_one_name" field.
+func PlusOneNameEqualFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldPlusOneName), v))
+	})
+}
+
+// PlusOneNameContainsFold applies the ContainsFold predicate on the "plus_one_name" field.
+func PlusOneNameContainsFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldPlusOneName), v))
+	})
+}
+
+// PhoneEQ applies the EQ predicate on the "phone" field.
+func PhoneEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneNEQ applies the NEQ predicate on the "phone" field.
+func PhoneNEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneIn applies the In predicate on the "phone" field.
+func PhoneIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPhone), v...))
+	})
+}
+
+// PhoneNotIn applies the NotIn predicate on the "phone" field.
+func PhoneNotIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPhone), v...))
+	})
+}
+
+// PhoneGT applies the GT predicate on the "phone" field.
+func PhoneGT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneGTE applies the GTE predicate on the "phone" field.
+func PhoneGTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneLT applies the LT predicate on the "phone" field.
+func PhoneLT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneLTE applies the LTE predicate on the "phone" field.
+func PhoneLTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneContains applies the Contains predicate on the "phone" field.
+func PhoneContains(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneHasPrefix applies the HasPrefix predicate on the "phone" field.
+func PhoneHasPrefix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneHasSuffix applies the HasSuffix predicate on the "phone" field.
+func PhoneHasSuffix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneIsNil applies the IsNil predicate on the "phone" field.
+func PhoneIsNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPhone)))
+	})
+}
+
+// PhoneNotNil applies the NotNil predicate on the "phone" field.
+func PhoneNotNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPhone)))
+	})
+}
+
+// PhoneEqualFold applies the EqualFold predicate on the "phone" field.
+func PhoneEqualFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneContainsFold applies the ContainsFold predicate on the "phone" field.
+func PhoneContainsFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldPhone), v))
+	})
+}
+
+// EmailEQ applies the EQ predicate on the "email" field.
+func EmailEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmail), v))
+	})
+}
+
+// EmailNEQ applies the NEQ predicate on the "email" field.
+func EmailNEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEmail), v))
+	})
+}
+
+// EmailIn applies the In predicate on the "email" field.
+func EmailIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldEmail), v...))
+	})
+}
+
+// EmailNotIn applies the NotIn predicate on the "email" field.
+func EmailNotIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldEmail), v...))
+	})
+}
+
+// EmailGT applies the GT predicate on the "email" field.
+func EmailGT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldEmail), v))
+	})
+}
+
+// EmailGTE applies the GTE predicate on the "email" field.
+func EmailGTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldEmail), v))
+	})
+}
+
+// EmailLT applies the LT predicate on the "email" field.
+func EmailLT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldEmail), v))
+	})
+}
+
+// EmailLTE applies the LTE predicate on the "email" field.
+func EmailLTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldEmail), v))
+	})
+}
+
+// EmailContains applies the Contains predicate on the "email" field.
+func EmailContains(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldEmail), v))
+	})
+}
+
+// EmailHasPrefix applies the HasPrefix predicate on the "email" field.
+func EmailHasPrefix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldEmail), v))
+	})
+}
+
+// EmailHasSuffix applies the HasSuffix predicate on the "email" field.
+func EmailHasSuffix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldEmail), v))
+	})
+}
+
+// EmailIsNil applies the IsNil predicate on the "email" field.
+func EmailIsNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEmail)))
+	})
+}
+
+// EmailNotNil applies the NotNil predicate on the "email" field.
+func EmailNotNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEmail)))
+	})
+}
+
+// EmailEqualFold applies the EqualFold predicate on the "email" field.
+func EmailEqualFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldEmail), v))
+	})
+}
+
+// EmailContainsFold applies the ContainsFold predicate on the "email" field.
+func EmailContainsFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldEmail), v))
+	})
+}
+
+// AddressLine1EQ applies the EQ predicate on the "address_line_1" field.
+func AddressLine1EQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddressLine1), v))
+	})
+}
+
+// AddressLine1NEQ applies the NEQ predicate on the "address_line_1" field.
+func AddressLine1NEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAddressLine1), v))
+	})
+}
+
+// AddressLine1In applies the In predicate on the "address_line_1" field.
+func AddressLine1In(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAddressLine1), v...))
+	})
+}
+
+// AddressLine1NotIn applies the NotIn predicate on the "address_line_1" field.
+func AddressLine1NotIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAddressLine1), v...))
+	})
+}
+
+// AddressLine1GT applies the GT predicate on the "address_line_1" field.
+func AddressLine1GT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAddressLine1), v))
+	})
+}
+
+// AddressLine1GTE applies the GTE predicate on the "address_line_1" field.
+func AddressLine1GTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAddressLine1), v))
+	})
+}
+
+// AddressLine1LT applies the LT predicate on the "address_line_1" field.
+func AddressLine1LT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAddressLine1), v))
+	})
+}
+
+// AddressLine1LTE applies the LTE predicate on the "address_line_1" field.
+func AddressLine1LTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAddressLine1), v))
+	})
+}
+
+// AddressLine1Contains applies the Contains predicate on the "address_line_1" field.
+func AddressLine1Contains(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAddressLine1), v))
+	})
+}
+
+// AddressLine1HasPrefix applies the HasPrefix predicate on the "address_line_1" field.
+func AddressLine1HasPrefix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAddressLine1), v))
+	})
+}
+
+// AddressLine1HasSuffix applies the HasSuffix predicate on the "address_line_1" field.
+func AddressLine1HasSuffix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAddressLine1), v))
+	})
+}
+
+// AddressLine1IsNil applies the IsNil predicate on the "address_line_1" field.
+func AddressLine1IsNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAddressLine1)))
+	})
+}
+
+// AddressLine1NotNil applies the NotNil predicate on the "address_line_1" field.
+func AddressLine1NotNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAddressLine1)))
+	})
+}
+
+// AddressLine1EqualFold applies the EqualFold predicate on the "address_line_1" field.
+func AddressLine1EqualFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAddressLine1), v))
+	})
+}
+
+// AddressLine1ContainsFold applies the ContainsFold predicate on the "address_line_1" field.
+func AddressLine1ContainsFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAddressLine1), v))
+	})
+}
+
+// AddressLine2EQ applies the EQ predicate on the "address_line_2" field.
+func AddressLine2EQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddressLine2), v))
+	})
+}
+
+// AddressLine2NEQ applies the NEQ predicate on the "address_line_2" field.
+func AddressLine2NEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAddressLine2), v))
+	})
+}
+
+// AddressLine2In applies the In predicate on the "address_line_2" field.
+func AddressLine2In(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAddressLine2), v...))
+	})
+}
+
+// AddressLine2NotIn applies the NotIn predicate on the "address_line_2" field.
+func AddressLine2NotIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAddressLine2), v...))
+	})
+}
+
+// AddressLine2GT applies the GT predicate on the "address_line_2" field.
+func AddressLine2GT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAddressLine2), v))
+	})
+}
+
+// AddressLine2GTE applies the GTE predicate on the "address_line_2" field.
+func AddressLine2GTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAddressLine2), v))
+	})
+}
+
+// AddressLine2LT applies the LT predicate on the "address_line_2" field.
+func AddressLine2LT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAddressLine2), v))
+	})
+}
+
+// AddressLine2LTE applies the LTE predicate on the "address_line_2" field.
+func AddressLine2LTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAddressLine2), v))
+	})
+}
+
+// AddressLine2Contains applies the Contains predicate on the "address_line_2" field.
+func AddressLine2Contains(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAddressLine2), v))
+	})
+}
+
+// AddressLine2HasPrefix applies the HasPrefix predicate on the "address_line_2" field.
+func AddressLine2HasPrefix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAddressLine2), v))
+	})
+}
+
+// AddressLine2HasSuffix applies the HasSuffix predicate on the "address_line_2" field.
+func AddressLine2HasSuffix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAddressLine2), v))
+	})
+}
+
+// AddressLine2IsNil applies the IsNil predicate on the "address_line_2" field.
+func AddressLine2IsNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAddressLine2)))
+	})
+}
+
+// AddressLine2NotNil applies the NotNil predicate on the "address_line_2" field.
+func AddressLine2NotNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAddressLine2)))
+	})
+}
+
+// AddressLine2EqualFold applies the EqualFold predicate on the "address_line_2" field.
+func AddressLine2EqualFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAddressLine2), v))
+	})
+}
+
+// AddressLine2ContainsFold applies the ContainsFold predicate on the "address_line_2" field.
+func AddressLine2ContainsFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAddressLine2), v))
+	})
+}
+
+// AddressCityEQ applies the EQ predicate on the "address_city" field.
+func AddressCityEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddressCity), v))
+	})
+}
+
+// AddressCityNEQ applies the NEQ predicate on the "address_city" field.
+func AddressCityNEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAddressCity), v))
+	})
+}
+
+// AddressCityIn applies the In predicate on the "address_city" field.
+func AddressCityIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAddressCity), v...))
+	})
+}
+
+// AddressCityNotIn applies the NotIn predicate on the "address_city" field.
+func AddressCityNotIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAddressCity), v...))
+	})
+}
+
+// AddressCityGT applies the GT predicate on the "address_city" field.
+func AddressCityGT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAddressCity), v))
+	})
+}
+
+// AddressCityGTE applies the GTE predicate on the "address_city" field.
+func AddressCityGTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAddressCity), v))
+	})
+}
+
+// AddressCityLT applies the LT predicate on the "address_city" field.
+func AddressCityLT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAddressCity), v))
+	})
+}
+
+// AddressCityLTE applies the LTE predicate on the "address_city" field.
+func AddressCityLTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAddressCity), v))
+	})
+}
+
+// AddressCityContains applies the Contains predicate on the "address_city" field.
+func AddressCityContains(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAddressCity), v))
+	})
+}
+
+// AddressCityHasPrefix applies the HasPrefix predicate on the "address_city" field.
+func AddressCityHasPrefix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAddressCity), v))
+	})
+}
+
+// AddressCityHasSuffix applies the HasSuffix predicate on the "address_city" field.
+func AddressCityHasSuffix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAddressCity), v))
+	})
+}
+
+// AddressCityIsNil applies the IsNil predicate on the "address_city" field.
+func AddressCityIsNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAddressCity)))
+	})
+}
+
+// AddressCityNotNil applies the NotNil predicate on the "address_city" field.
+func AddressCityNotNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAddressCity)))
+	})
+}
+
+// AddressCityEqualFold applies the EqualFold predicate on the "address_city" field.
+func AddressCityEqualFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAddressCity), v))
+	})
+}
+
+// AddressCityContainsFold applies the ContainsFold predicate on the "address_city" field.
+func AddressCityContainsFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAddressCity), v))
+	})
+}
+
+// AddressStateEQ applies the EQ predicate on the "address_state" field.
+func AddressStateEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddressState), v))
+	})
+}
+
+// AddressStateNEQ applies the NEQ predicate on the "address_state" field.
+func AddressStateNEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAddressState), v))
+	})
+}
+
+// AddressStateIn applies the In predicate on the "address_state" field.
+func AddressStateIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAddressState), v...))
+	})
+}
+
+// AddressStateNotIn applies the NotIn predicate on the "address_state" field.
+func AddressStateNotIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAddressState), v...))
+	})
+}
+
+// AddressStateGT applies the GT predicate on the "address_state" field.
+func AddressStateGT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAddressState), v))
+	})
+}
+
+// AddressStateGTE applies the GTE predicate on the "address_state" field.
+func AddressStateGTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAddressState), v))
+	})
+}
+
+// AddressStateLT applies the LT predicate on the "address_state" field.
+func AddressStateLT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAddressState), v))
+	})
+}
+
+// AddressStateLTE applies the LTE predicate on the "address_state" field.
+func AddressStateLTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAddressState), v))
+	})
+}
+
+// AddressStateContains applies the Contains predicate on the "address_state" field.
+func AddressStateContains(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAddressState), v))
+	})
+}
+
+// AddressStateHasPrefix applies the HasPrefix predicate on the "address_state" field.
+func AddressStateHasPrefix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAddressState), v))
+	})
+}
+
+// AddressStateHasSuffix applies the HasSuffix predicate on the "address_state" field.
+func AddressStateHasSuffix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAddressState), v))
+	})
+}
+
+// AddressStateIsNil applies the IsNil predicate on the "address_state" field.
+func AddressStateIsNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAddressState)))
+	})
+}
+
+// AddressStateNotNil applies the NotNil predicate on the "address_state" field.
+func AddressStateNotNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAddressState)))
+	})
+}
+
+// AddressStateEqualFold applies the EqualFold predicate on the "address_state" field.
+func AddressStateEqualFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAddressState), v))
+	})
+}
+
+// AddressStateContainsFold applies the ContainsFold predicate on the "address_state" field.
+func AddressStateContainsFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAddressState), v))
+	})
+}
+
+// AddressPostalCodeEQ applies the EQ predicate on the "address_postal_code" field.
+func AddressPostalCodeEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddressPostalCode), v))
+	})
+}
+
+// AddressPostalCodeNEQ applies the NEQ predicate on the "address_postal_code" field.
+func AddressPostalCodeNEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAddressPostalCode), v))
+	})
+}
+
+// AddressPostalCodeIn applies the In predicate on the "address_postal_code" field.
+func AddressPostalCodeIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAddressPostalCode), v...))
+	})
+}
+
+// AddressPostalCodeNotIn applies the NotIn predicate on the "address_postal_code" field.
+func AddressPostalCodeNotIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAddressPostalCode), v...))
+	})
+}
+
+// AddressPostalCodeGT applies the GT predicate on the "address_postal_code" field.
+func AddressPostalCodeGT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAddressPostalCode), v))
+	})
+}
+
+// AddressPostalCodeGTE applies the GTE predicate on the "address_postal_code" field.
+func AddressPostalCodeGTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAddressPostalCode), v))
+	})
+}
+
+// AddressPostalCodeLT applies the LT predicate on the "address_postal_code" field.
+func AddressPostalCodeLT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAddressPostalCode), v))
+	})
+}
+
+// AddressPostalCodeLTE applies the LTE predicate on the "address_postal_code" field.
+func AddressPostalCodeLTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAddressPostalCode), v))
+	})
+}
+
+// AddressPostalCodeContains applies the Contains predicate on the "address_postal_code" field.
+func AddressPostalCodeContains(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAddressPostalCode), v))
+	})
+}
+
+// AddressPostalCodeHasPrefix applies the HasPrefix predicate on the "address_postal_code" field.
+func AddressPostalCodeHasPrefix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAddressPostalCode), v))
+	})
+}
+
+// AddressPostalCodeHasSuffix applies the HasSuffix predicate on the "address_postal_code" field.
+func AddressPostalCodeHasSuffix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAddressPostalCode), v))
+	})
+}
+
+// AddressPostalCodeIsNil applies the IsNil predicate on the "address_postal_code" field.
+func AddressPostalCodeIsNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAddressPostalCode)))
+	})
+}
+
+// AddressPostalCodeNotNil applies the NotNil predicate on the "address_postal_code" field.
+func AddressPostalCodeNotNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAddressPostalCode)))
+	})
+}
+
+// AddressPostalCodeEqualFold applies the EqualFold predicate on the "address_postal_code" field.
+func AddressPostalCodeEqualFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAddressPostalCode), v))
+	})
+}
+
+// AddressPostalCodeContainsFold applies the ContainsFold predicate on the "address_postal_code" field.
+func AddressPostalCodeContainsFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAddressPostalCode), v))
+	})
+}
+
+// AddressCountryEQ applies the EQ predicate on the "address_country" field.
+func AddressCountryEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddressCountry), v))
+	})
+}
+
+// AddressCountryNEQ applies the NEQ predicate on the "address_country" field.
+func AddressCountryNEQ(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAddressCountry), v))
+	})
+}
+
+// AddressCountryIn applies the In predicate on the "address_country" field.
+func AddressCountryIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAddressCountry), v...))
+	})
+}
+
+// AddressCountryNotIn applies the NotIn predicate on the "address_country" field.
+func AddressCountryNotIn(vs ...string) predicate.Invitee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Invitee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAddressCountry), v...))
+	})
+}
+
+// AddressCountryGT applies the GT predicate on the "address_country" field.
+func AddressCountryGT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAddressCountry), v))
+	})
+}
+
+// AddressCountryGTE applies the GTE predicate on the "address_country" field.
+func AddressCountryGTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAddressCountry), v))
+	})
+}
+
+// AddressCountryLT applies the LT predicate on the "address_country" field.
+func AddressCountryLT(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAddressCountry), v))
+	})
+}
+
+// AddressCountryLTE applies the LTE predicate on the "address_country" field.
+func AddressCountryLTE(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAddressCountry), v))
+	})
+}
+
+// AddressCountryContains applies the Contains predicate on the "address_country" field.
+func AddressCountryContains(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAddressCountry), v))
+	})
+}
+
+// AddressCountryHasPrefix applies the HasPrefix predicate on the "address_country" field.
+func AddressCountryHasPrefix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAddressCountry), v))
+	})
+}
+
+// AddressCountryHasSuffix applies the HasSuffix predicate on the "address_country" field.
+func AddressCountryHasSuffix(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAddressCountry), v))
+	})
+}
+
+// AddressCountryIsNil applies the IsNil predicate on the "address_country" field.
+func AddressCountryIsNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAddressCountry)))
+	})
+}
+
+// AddressCountryNotNil applies the NotNil predicate on the "address_country" field.
+func AddressCountryNotNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAddressCountry)))
+	})
+}
+
+// AddressCountryEqualFold applies the EqualFold predicate on the "address_country" field.
+func AddressCountryEqualFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAddressCountry), v))
+	})
+}
+
+// AddressCountryContainsFold applies the ContainsFold predicate on the "address_country" field.
+func AddressCountryContainsFold(v string) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAddressCountry), v))
 	})
 }
 

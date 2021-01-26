@@ -12,10 +12,10 @@ import (
 	"syscall"
 	"time"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
@@ -23,7 +23,6 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 
 	"wedding/ent"
-	"wedding/ent/backroomuser"
 	"wedding/pkg/server"
 	"wedding/pkg/util"
 )
@@ -40,6 +39,11 @@ var (
 var (
 	authZone   string
 	authSecret string
+)
+
+var (
+	hydraAdminURL  string
+	hydraPublicURL string
 )
 
 func main() {
@@ -98,6 +102,18 @@ func main() {
 				Destination: &authSecret,
 				EnvVars:     []string{"AUTH_SECRET"},
 				Value:       "default",
+			},
+			&cli.StringFlag{
+				Name:        "hydra-admin-url",
+				Destination: &hydraAdminURL,
+				EnvVars:     []string{"HYDRA_ADMIN_URL"},
+				Value:       "https://admin.hydra.imle.io",
+			},
+			&cli.StringFlag{
+				Name:        "hydra-public-url",
+				Destination: &hydraPublicURL,
+				EnvVars:     []string{"HYDRA_PUBLIC_URL"},
+				Value:       "https://hydra.imle.io",
 			},
 		},
 		Commands: []*cli.Command{
@@ -178,33 +194,34 @@ func main() {
 			}
 
 			// Setup gin.
-			var router = gin.Default()
+			var engine = gin.Default()
 
-			// Setup CORS.
-			corsConfig := cors.DefaultConfig()
-			corsConfig.AllowOrigins = []string{"*"}
-			router.Use(cors.New(corsConfig))
-
-			// Setup JWT Auth.
-			authMiddleware, err := getJwtAuthMiddleware(ctx.Context, client, router)
+			// Setup sessions
+			store, err := redis.NewStore(10, "tcp", "localhost:6379", "", []byte("secret"))
 			if err != nil {
 				return err
 			}
+			engine.Use(sessions.Sessions("wedding", store))
 
-			// Register auth handlers.
-			router.POST("/api/login", authMiddleware.LoginHandler)
-			auth := router.Group("/api/auth")
-			// Refresh time can be longer than token timeout
-			auth.GET("/refresh_token", authMiddleware.RefreshHandler)
+			// Setup CORS.
+			engine.Use(cors.New(cors.Config{
+				AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
+				AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+				AllowCredentials: true,
+				AllowOrigins:     []string{"*"},
+				MaxAge:           12 * time.Hour,
+			}))
 
 			// Register data handlers.
-			server.RegisterAdminAPIv1(client, router.Group("/api/admin/v1/", authMiddleware.MiddlewareFunc()))
-			server.RegisterAPIv1(client, router.Group("/api/v1/invitees"))
+			router := engine.Group("/api")
+			auth := server.RegisterAuth(client, router, store)
+			server.RegisterAdminAPIv1(client, router.Group("/admin/v1/", auth.Middleware()))
+			server.RegisterAPIv1(client, router.Group("/v1/invitees"))
 
 			// Create server.
 			srv := &http.Server{
 				Addr:    serverAddress,
-				Handler: router,
+				Handler: engine,
 			}
 
 			// Initializing the server in a goroutine to enable graceful handling of shutdown.
@@ -297,84 +314,4 @@ func generateFakeData(ctx context.Context, client *ent.Client) {
 		SetName("Chandler Smith").
 		SetParty(smithParty).
 		SaveX(ctx)
-}
-
-const identityKey = "username"
-
-type login struct {
-	Username string `form:"username" json:"username" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
-}
-
-func getJwtAuthMiddleware(ctx context.Context, client *ent.Client, engine *gin.Engine) (*jwt.GinJWTMiddleware, error) {
-	return jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       authZone,
-		Key:         []byte(authSecret),
-		Timeout:     time.Hour,
-		MaxRefresh:  time.Hour,
-		IdentityKey: identityKey,
-		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(*ent.BackroomUser); ok {
-				return jwt.MapClaims{
-					identityKey: v.Username,
-				}
-			}
-			return jwt.MapClaims{}
-		},
-		IdentityHandler: func(c *gin.Context) interface{} {
-			claims := jwt.ExtractClaims(c)
-			return &ent.BackroomUser{
-				Username: claims[identityKey].(string),
-			}
-		},
-		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var credentials login
-			if err := c.ShouldBindBodyWith(&credentials, binding.JSON); err != nil {
-				return nil, jwt.ErrMissingLoginValues
-			}
-
-			user, err := client.BackroomUser.Query().Where(backroomuser.Username(credentials.Username)).Only(ctx)
-			if err != nil {
-				return nil, jwt.ErrFailedAuthentication
-			}
-
-			err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
-			if err != nil {
-				return nil, jwt.ErrFailedAuthentication
-			}
-
-			return user, nil
-		},
-		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if v, ok := data.(*ent.BackroomUser); ok && v.Username == "admin" {
-				return true
-			}
-
-			return false
-		},
-		LoginResponse: func(c *gin.Context, code int, token string, t time.Time) {
-			var credentials login
-
-			// Already did this once, would have errored earlier.
-			_ = c.ShouldBindBodyWith(&credentials, binding.JSON)
-			user, _ := client.BackroomUser.Query().Where(backroomuser.Username(credentials.Username)).Only(ctx)
-
-			c.JSON(http.StatusOK, gin.H{
-				"code":    http.StatusOK,
-				"token":   token,
-				"expire":  t.Format(time.RFC3339),
-				"message": "login successfully",
-				"user":    user,
-			})
-		},
-		Unauthorized: func(c *gin.Context, code int, message string) {
-			c.JSON(code, gin.H{
-				"code":    code,
-				"message": message,
-			})
-		},
-		TokenLookup:   "header: Authorization, query: token, cookie: jwt",
-		TokenHeadName: "Bearer",
-		TimeFunc:      time.Now,
-	})
 }

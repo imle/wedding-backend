@@ -9,6 +9,28 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldIsChild holds the string denoting the is_child field in the database.
+	FieldIsChild = "is_child"
+	// FieldHasPlusOne holds the string denoting the has_plus_one field in the database.
+	FieldHasPlusOne = "has_plus_one"
+	// FieldPlusOneName holds the string denoting the plus_one_name field in the database.
+	FieldPlusOneName = "plus_one_name"
+	// FieldPhone holds the string denoting the phone field in the database.
+	FieldPhone = "phone"
+	// FieldEmail holds the string denoting the email field in the database.
+	FieldEmail = "email"
+	// FieldAddressLine1 holds the string denoting the address_line_1 field in the database.
+	FieldAddressLine1 = "address_line_1"
+	// FieldAddressLine2 holds the string denoting the address_line_2 field in the database.
+	FieldAddressLine2 = "address_line_2"
+	// FieldAddressCity holds the string denoting the address_city field in the database.
+	FieldAddressCity = "address_city"
+	// FieldAddressState holds the string denoting the address_state field in the database.
+	FieldAddressState = "address_state"
+	// FieldAddressPostalCode holds the string denoting the address_postal_code field in the database.
+	FieldAddressPostalCode = "address_postal_code"
+	// FieldAddressCountry holds the string denoting the address_country field in the database.
+	FieldAddressCountry = "address_country"
 
 	// EdgeParty holds the string denoting the party edge name in mutations.
 	EdgeParty = "party"
@@ -28,6 +50,17 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldName,
+	FieldIsChild,
+	FieldHasPlusOne,
+	FieldPlusOneName,
+	FieldPhone,
+	FieldEmail,
+	FieldAddressLine1,
+	FieldAddressLine2,
+	FieldAddressCity,
+	FieldAddressState,
+	FieldAddressPostalCode,
+	FieldAddressCountry,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the Invitee type.
@@ -53,4 +86,8 @@ func ValidColumn(column string) bool {
 var (
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// DefaultIsChild holds the default value on creation for the "is_child" field.
+	DefaultIsChild bool
+	// DefaultHasPlusOne holds the default value on creation for the "has_plus_one" field.
+	DefaultHasPlusOne bool
 )

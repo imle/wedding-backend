@@ -21,13 +21,13 @@ func RegisterAPIv1(database *ent.Client, g *gin.RouterGroup) *APIv1 {
 		router:   g,
 	}
 
-	g.GET("", api.QueryByInviteeForParty)
-	g.GET("/:code", api.GetInviteeByCode)
+	g.GET("", api.queryByInviteeForParty)
+	g.GET("/:code", api.getInviteeByCode)
 
 	return api
 }
 
-func (api *APIv1) QueryByInviteeForParty(c *gin.Context) {
+func (api *APIv1) queryByInviteeForParty(c *gin.Context) {
 	name := c.Query("query")
 
 	if len(name) < 3 {
@@ -49,7 +49,7 @@ func (api *APIv1) QueryByInviteeForParty(c *gin.Context) {
 	})
 }
 
-func (api *APIv1) GetInviteeByCode(c *gin.Context) {
+func (api *APIv1) getInviteeByCode(c *gin.Context) {
 	code := c.Param("code")
 
 	result, _ := api.database.InviteeParty.Query().

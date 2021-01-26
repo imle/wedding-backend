@@ -25,6 +25,17 @@ var (
 	InviteesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
+		{Name: "is_child", Type: field.TypeBool, Nullable: true},
+		{Name: "has_plus_one", Type: field.TypeBool},
+		{Name: "plus_one_name", Type: field.TypeString, Nullable: true},
+		{Name: "phone", Type: field.TypeString, Nullable: true},
+		{Name: "email", Type: field.TypeString, Nullable: true},
+		{Name: "address_line_1", Type: field.TypeString, Nullable: true},
+		{Name: "address_line_2", Type: field.TypeString, Nullable: true},
+		{Name: "address_city", Type: field.TypeString, Nullable: true},
+		{Name: "address_state", Type: field.TypeString, Nullable: true},
+		{Name: "address_postal_code", Type: field.TypeString, Nullable: true},
+		{Name: "address_country", Type: field.TypeString, Nullable: true},
 		{Name: "invitee_party_invitees", Type: field.TypeInt, Nullable: true},
 	}
 	// InviteesTable holds the schema information for the "invitees" table.
@@ -35,7 +46,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:  "invitees_invitee_parties_invitees",
-				Columns: []*schema.Column{InviteesColumns[2]},
+				Columns: []*schema.Column{InviteesColumns[13]},
 
 				RefColumns: []*schema.Column{InviteePartiesColumns[0]},
 				OnDelete:   schema.SetNull,

@@ -16,6 +16,29 @@ func (Invitee) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
 			NotEmpty(),
+		field.Bool("is_child").
+			Default(false).
+			Optional().Nillable(),
+		field.Bool("has_plus_one").
+			Default(false),
+		field.String("plus_one_name").
+			Optional().Nillable(),
+		field.String("phone").
+			Optional().Nillable(),
+		field.String("email").
+			Optional().Nillable(),
+		field.String("address_line_1").
+			Optional().Nillable(),
+		field.String("address_line_2").
+			Optional().Nillable(),
+		field.String("address_city").
+			Optional().Nillable(),
+		field.String("address_state").
+			Optional().Nillable(),
+		field.String("address_postal_code").
+			Optional().Nillable(),
+		field.String("address_country").
+			Optional().Nillable(),
 	}
 }
 

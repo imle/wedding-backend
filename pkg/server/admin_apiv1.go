@@ -19,12 +19,12 @@ func RegisterAdminAPIv1(database *ent.Client, g *gin.RouterGroup) *AdminAPIv1 {
 		router:   g,
 	}
 
-	g.GET("/parties", api.GetAllParties)
+	g.GET("/parties", api.getAllParties)
 
 	return api
 }
 
-func (api *AdminAPIv1) GetAllParties(c *gin.Context) {
+func (api *AdminAPIv1) getAllParties(c *gin.Context) {
 	result, _ := api.database.InviteeParty.Query().
 		WithInvitees().
 		All(c)

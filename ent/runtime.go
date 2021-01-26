@@ -43,6 +43,14 @@ func init() {
 	inviteeDescName := inviteeFields[0].Descriptor()
 	// invitee.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	invitee.NameValidator = inviteeDescName.Validators[0].(func(string) error)
+	// inviteeDescIsChild is the schema descriptor for is_child field.
+	inviteeDescIsChild := inviteeFields[1].Descriptor()
+	// invitee.DefaultIsChild holds the default value on creation for the is_child field.
+	invitee.DefaultIsChild = inviteeDescIsChild.Default.(bool)
+	// inviteeDescHasPlusOne is the schema descriptor for has_plus_one field.
+	inviteeDescHasPlusOne := inviteeFields[2].Descriptor()
+	// invitee.DefaultHasPlusOne holds the default value on creation for the has_plus_one field.
+	invitee.DefaultHasPlusOne = inviteeDescHasPlusOne.Default.(bool)
 	inviteepartyFields := schema.InviteeParty{}.Fields()
 	_ = inviteepartyFields
 	// inviteepartyDescName is the schema descriptor for name field.

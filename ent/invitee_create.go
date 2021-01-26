@@ -26,6 +26,160 @@ func (ic *InviteeCreate) SetName(s string) *InviteeCreate {
 	return ic
 }
 
+// SetIsChild sets the "is_child" field.
+func (ic *InviteeCreate) SetIsChild(b bool) *InviteeCreate {
+	ic.mutation.SetIsChild(b)
+	return ic
+}
+
+// SetNillableIsChild sets the "is_child" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillableIsChild(b *bool) *InviteeCreate {
+	if b != nil {
+		ic.SetIsChild(*b)
+	}
+	return ic
+}
+
+// SetHasPlusOne sets the "has_plus_one" field.
+func (ic *InviteeCreate) SetHasPlusOne(b bool) *InviteeCreate {
+	ic.mutation.SetHasPlusOne(b)
+	return ic
+}
+
+// SetNillableHasPlusOne sets the "has_plus_one" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillableHasPlusOne(b *bool) *InviteeCreate {
+	if b != nil {
+		ic.SetHasPlusOne(*b)
+	}
+	return ic
+}
+
+// SetPlusOneName sets the "plus_one_name" field.
+func (ic *InviteeCreate) SetPlusOneName(s string) *InviteeCreate {
+	ic.mutation.SetPlusOneName(s)
+	return ic
+}
+
+// SetNillablePlusOneName sets the "plus_one_name" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillablePlusOneName(s *string) *InviteeCreate {
+	if s != nil {
+		ic.SetPlusOneName(*s)
+	}
+	return ic
+}
+
+// SetPhone sets the "phone" field.
+func (ic *InviteeCreate) SetPhone(s string) *InviteeCreate {
+	ic.mutation.SetPhone(s)
+	return ic
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillablePhone(s *string) *InviteeCreate {
+	if s != nil {
+		ic.SetPhone(*s)
+	}
+	return ic
+}
+
+// SetEmail sets the "email" field.
+func (ic *InviteeCreate) SetEmail(s string) *InviteeCreate {
+	ic.mutation.SetEmail(s)
+	return ic
+}
+
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillableEmail(s *string) *InviteeCreate {
+	if s != nil {
+		ic.SetEmail(*s)
+	}
+	return ic
+}
+
+// SetAddressLine1 sets the "address_line_1" field.
+func (ic *InviteeCreate) SetAddressLine1(s string) *InviteeCreate {
+	ic.mutation.SetAddressLine1(s)
+	return ic
+}
+
+// SetNillableAddressLine1 sets the "address_line_1" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillableAddressLine1(s *string) *InviteeCreate {
+	if s != nil {
+		ic.SetAddressLine1(*s)
+	}
+	return ic
+}
+
+// SetAddressLine2 sets the "address_line_2" field.
+func (ic *InviteeCreate) SetAddressLine2(s string) *InviteeCreate {
+	ic.mutation.SetAddressLine2(s)
+	return ic
+}
+
+// SetNillableAddressLine2 sets the "address_line_2" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillableAddressLine2(s *string) *InviteeCreate {
+	if s != nil {
+		ic.SetAddressLine2(*s)
+	}
+	return ic
+}
+
+// SetAddressCity sets the "address_city" field.
+func (ic *InviteeCreate) SetAddressCity(s string) *InviteeCreate {
+	ic.mutation.SetAddressCity(s)
+	return ic
+}
+
+// SetNillableAddressCity sets the "address_city" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillableAddressCity(s *string) *InviteeCreate {
+	if s != nil {
+		ic.SetAddressCity(*s)
+	}
+	return ic
+}
+
+// SetAddressState sets the "address_state" field.
+func (ic *InviteeCreate) SetAddressState(s string) *InviteeCreate {
+	ic.mutation.SetAddressState(s)
+	return ic
+}
+
+// SetNillableAddressState sets the "address_state" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillableAddressState(s *string) *InviteeCreate {
+	if s != nil {
+		ic.SetAddressState(*s)
+	}
+	return ic
+}
+
+// SetAddressPostalCode sets the "address_postal_code" field.
+func (ic *InviteeCreate) SetAddressPostalCode(s string) *InviteeCreate {
+	ic.mutation.SetAddressPostalCode(s)
+	return ic
+}
+
+// SetNillableAddressPostalCode sets the "address_postal_code" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillableAddressPostalCode(s *string) *InviteeCreate {
+	if s != nil {
+		ic.SetAddressPostalCode(*s)
+	}
+	return ic
+}
+
+// SetAddressCountry sets the "address_country" field.
+func (ic *InviteeCreate) SetAddressCountry(s string) *InviteeCreate {
+	ic.mutation.SetAddressCountry(s)
+	return ic
+}
+
+// SetNillableAddressCountry sets the "address_country" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillableAddressCountry(s *string) *InviteeCreate {
+	if s != nil {
+		ic.SetAddressCountry(*s)
+	}
+	return ic
+}
+
 // SetPartyID sets the "party" edge to the InviteeParty entity by ID.
 func (ic *InviteeCreate) SetPartyID(id int) *InviteeCreate {
 	ic.mutation.SetPartyID(id)
@@ -56,6 +210,7 @@ func (ic *InviteeCreate) Save(ctx context.Context) (*Invitee, error) {
 		err  error
 		node *Invitee
 	)
+	ic.defaults()
 	if len(ic.hooks) == 0 {
 		if err = ic.check(); err != nil {
 			return nil, err
@@ -94,6 +249,18 @@ func (ic *InviteeCreate) SaveX(ctx context.Context) *Invitee {
 	return v
 }
 
+// defaults sets the default values of the builder before save.
+func (ic *InviteeCreate) defaults() {
+	if _, ok := ic.mutation.IsChild(); !ok {
+		v := invitee.DefaultIsChild
+		ic.mutation.SetIsChild(v)
+	}
+	if _, ok := ic.mutation.HasPlusOne(); !ok {
+		v := invitee.DefaultHasPlusOne
+		ic.mutation.SetHasPlusOne(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ic *InviteeCreate) check() error {
 	if _, ok := ic.mutation.Name(); !ok {
@@ -103,6 +270,9 @@ func (ic *InviteeCreate) check() error {
 		if err := invitee.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
 		}
+	}
+	if _, ok := ic.mutation.HasPlusOne(); !ok {
+		return &ValidationError{Name: "has_plus_one", err: errors.New("ent: missing required field \"has_plus_one\"")}
 	}
 	return nil
 }
@@ -138,6 +308,94 @@ func (ic *InviteeCreate) createSpec() (*Invitee, *sqlgraph.CreateSpec) {
 			Column: invitee.FieldName,
 		})
 		_node.Name = value
+	}
+	if value, ok := ic.mutation.IsChild(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: invitee.FieldIsChild,
+		})
+		_node.IsChild = &value
+	}
+	if value, ok := ic.mutation.HasPlusOne(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: invitee.FieldHasPlusOne,
+		})
+		_node.HasPlusOne = value
+	}
+	if value, ok := ic.mutation.PlusOneName(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: invitee.FieldPlusOneName,
+		})
+		_node.PlusOneName = &value
+	}
+	if value, ok := ic.mutation.Phone(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: invitee.FieldPhone,
+		})
+		_node.Phone = &value
+	}
+	if value, ok := ic.mutation.Email(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: invitee.FieldEmail,
+		})
+		_node.Email = &value
+	}
+	if value, ok := ic.mutation.AddressLine1(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: invitee.FieldAddressLine1,
+		})
+		_node.AddressLine1 = &value
+	}
+	if value, ok := ic.mutation.AddressLine2(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: invitee.FieldAddressLine2,
+		})
+		_node.AddressLine2 = &value
+	}
+	if value, ok := ic.mutation.AddressCity(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: invitee.FieldAddressCity,
+		})
+		_node.AddressCity = &value
+	}
+	if value, ok := ic.mutation.AddressState(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: invitee.FieldAddressState,
+		})
+		_node.AddressState = &value
+	}
+	if value, ok := ic.mutation.AddressPostalCode(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: invitee.FieldAddressPostalCode,
+		})
+		_node.AddressPostalCode = &value
+	}
+	if value, ok := ic.mutation.AddressCountry(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: invitee.FieldAddressCountry,
+		})
+		_node.AddressCountry = &value
 	}
 	if nodes := ic.mutation.PartyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -175,6 +433,7 @@ func (icb *InviteeCreateBulk) Save(ctx context.Context) ([]*Invitee, error) {
 	for i := range icb.builders {
 		func(i int, root context.Context) {
 			builder := icb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*InviteeMutation)
 				if !ok {

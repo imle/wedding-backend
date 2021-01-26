@@ -372,16 +372,27 @@ func (m *BackroomUserMutation) ResetEdge(name string) error {
 // InviteeMutation represents an operation that mutates the Invitee nodes in the graph.
 type InviteeMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	name          *string
-	clearedFields map[string]struct{}
-	party         *int
-	clearedparty  bool
-	done          bool
-	oldValue      func(context.Context) (*Invitee, error)
-	predicates    []predicate.Invitee
+	op                  Op
+	typ                 string
+	id                  *int
+	name                *string
+	is_child            *bool
+	has_plus_one        *bool
+	plus_one_name       *string
+	phone               *string
+	email               *string
+	address_line_1      *string
+	address_line_2      *string
+	address_city        *string
+	address_state       *string
+	address_postal_code *string
+	address_country     *string
+	clearedFields       map[string]struct{}
+	party               *int
+	clearedparty        bool
+	done                bool
+	oldValue            func(context.Context) (*Invitee, error)
+	predicates          []predicate.Invitee
 }
 
 var _ ent.Mutation = (*InviteeMutation)(nil)
@@ -499,6 +510,532 @@ func (m *InviteeMutation) ResetName() {
 	m.name = nil
 }
 
+// SetIsChild sets the "is_child" field.
+func (m *InviteeMutation) SetIsChild(b bool) {
+	m.is_child = &b
+}
+
+// IsChild returns the value of the "is_child" field in the mutation.
+func (m *InviteeMutation) IsChild() (r bool, exists bool) {
+	v := m.is_child
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsChild returns the old "is_child" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldIsChild(ctx context.Context) (v *bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsChild is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsChild requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsChild: %w", err)
+	}
+	return oldValue.IsChild, nil
+}
+
+// ClearIsChild clears the value of the "is_child" field.
+func (m *InviteeMutation) ClearIsChild() {
+	m.is_child = nil
+	m.clearedFields[invitee.FieldIsChild] = struct{}{}
+}
+
+// IsChildCleared returns if the "is_child" field was cleared in this mutation.
+func (m *InviteeMutation) IsChildCleared() bool {
+	_, ok := m.clearedFields[invitee.FieldIsChild]
+	return ok
+}
+
+// ResetIsChild resets all changes to the "is_child" field.
+func (m *InviteeMutation) ResetIsChild() {
+	m.is_child = nil
+	delete(m.clearedFields, invitee.FieldIsChild)
+}
+
+// SetHasPlusOne sets the "has_plus_one" field.
+func (m *InviteeMutation) SetHasPlusOne(b bool) {
+	m.has_plus_one = &b
+}
+
+// HasPlusOne returns the value of the "has_plus_one" field in the mutation.
+func (m *InviteeMutation) HasPlusOne() (r bool, exists bool) {
+	v := m.has_plus_one
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHasPlusOne returns the old "has_plus_one" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldHasPlusOne(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldHasPlusOne is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldHasPlusOne requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHasPlusOne: %w", err)
+	}
+	return oldValue.HasPlusOne, nil
+}
+
+// ResetHasPlusOne resets all changes to the "has_plus_one" field.
+func (m *InviteeMutation) ResetHasPlusOne() {
+	m.has_plus_one = nil
+}
+
+// SetPlusOneName sets the "plus_one_name" field.
+func (m *InviteeMutation) SetPlusOneName(s string) {
+	m.plus_one_name = &s
+}
+
+// PlusOneName returns the value of the "plus_one_name" field in the mutation.
+func (m *InviteeMutation) PlusOneName() (r string, exists bool) {
+	v := m.plus_one_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlusOneName returns the old "plus_one_name" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldPlusOneName(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPlusOneName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPlusOneName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlusOneName: %w", err)
+	}
+	return oldValue.PlusOneName, nil
+}
+
+// ClearPlusOneName clears the value of the "plus_one_name" field.
+func (m *InviteeMutation) ClearPlusOneName() {
+	m.plus_one_name = nil
+	m.clearedFields[invitee.FieldPlusOneName] = struct{}{}
+}
+
+// PlusOneNameCleared returns if the "plus_one_name" field was cleared in this mutation.
+func (m *InviteeMutation) PlusOneNameCleared() bool {
+	_, ok := m.clearedFields[invitee.FieldPlusOneName]
+	return ok
+}
+
+// ResetPlusOneName resets all changes to the "plus_one_name" field.
+func (m *InviteeMutation) ResetPlusOneName() {
+	m.plus_one_name = nil
+	delete(m.clearedFields, invitee.FieldPlusOneName)
+}
+
+// SetPhone sets the "phone" field.
+func (m *InviteeMutation) SetPhone(s string) {
+	m.phone = &s
+}
+
+// Phone returns the value of the "phone" field in the mutation.
+func (m *InviteeMutation) Phone() (r string, exists bool) {
+	v := m.phone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPhone returns the old "phone" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldPhone(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPhone is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPhone requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPhone: %w", err)
+	}
+	return oldValue.Phone, nil
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (m *InviteeMutation) ClearPhone() {
+	m.phone = nil
+	m.clearedFields[invitee.FieldPhone] = struct{}{}
+}
+
+// PhoneCleared returns if the "phone" field was cleared in this mutation.
+func (m *InviteeMutation) PhoneCleared() bool {
+	_, ok := m.clearedFields[invitee.FieldPhone]
+	return ok
+}
+
+// ResetPhone resets all changes to the "phone" field.
+func (m *InviteeMutation) ResetPhone() {
+	m.phone = nil
+	delete(m.clearedFields, invitee.FieldPhone)
+}
+
+// SetEmail sets the "email" field.
+func (m *InviteeMutation) SetEmail(s string) {
+	m.email = &s
+}
+
+// Email returns the value of the "email" field in the mutation.
+func (m *InviteeMutation) Email() (r string, exists bool) {
+	v := m.email
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmail returns the old "email" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldEmail(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldEmail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldEmail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmail: %w", err)
+	}
+	return oldValue.Email, nil
+}
+
+// ClearEmail clears the value of the "email" field.
+func (m *InviteeMutation) ClearEmail() {
+	m.email = nil
+	m.clearedFields[invitee.FieldEmail] = struct{}{}
+}
+
+// EmailCleared returns if the "email" field was cleared in this mutation.
+func (m *InviteeMutation) EmailCleared() bool {
+	_, ok := m.clearedFields[invitee.FieldEmail]
+	return ok
+}
+
+// ResetEmail resets all changes to the "email" field.
+func (m *InviteeMutation) ResetEmail() {
+	m.email = nil
+	delete(m.clearedFields, invitee.FieldEmail)
+}
+
+// SetAddressLine1 sets the "address_line_1" field.
+func (m *InviteeMutation) SetAddressLine1(s string) {
+	m.address_line_1 = &s
+}
+
+// AddressLine1 returns the value of the "address_line_1" field in the mutation.
+func (m *InviteeMutation) AddressLine1() (r string, exists bool) {
+	v := m.address_line_1
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddressLine1 returns the old "address_line_1" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldAddressLine1(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAddressLine1 is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAddressLine1 requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddressLine1: %w", err)
+	}
+	return oldValue.AddressLine1, nil
+}
+
+// ClearAddressLine1 clears the value of the "address_line_1" field.
+func (m *InviteeMutation) ClearAddressLine1() {
+	m.address_line_1 = nil
+	m.clearedFields[invitee.FieldAddressLine1] = struct{}{}
+}
+
+// AddressLine1Cleared returns if the "address_line_1" field was cleared in this mutation.
+func (m *InviteeMutation) AddressLine1Cleared() bool {
+	_, ok := m.clearedFields[invitee.FieldAddressLine1]
+	return ok
+}
+
+// ResetAddressLine1 resets all changes to the "address_line_1" field.
+func (m *InviteeMutation) ResetAddressLine1() {
+	m.address_line_1 = nil
+	delete(m.clearedFields, invitee.FieldAddressLine1)
+}
+
+// SetAddressLine2 sets the "address_line_2" field.
+func (m *InviteeMutation) SetAddressLine2(s string) {
+	m.address_line_2 = &s
+}
+
+// AddressLine2 returns the value of the "address_line_2" field in the mutation.
+func (m *InviteeMutation) AddressLine2() (r string, exists bool) {
+	v := m.address_line_2
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddressLine2 returns the old "address_line_2" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldAddressLine2(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAddressLine2 is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAddressLine2 requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddressLine2: %w", err)
+	}
+	return oldValue.AddressLine2, nil
+}
+
+// ClearAddressLine2 clears the value of the "address_line_2" field.
+func (m *InviteeMutation) ClearAddressLine2() {
+	m.address_line_2 = nil
+	m.clearedFields[invitee.FieldAddressLine2] = struct{}{}
+}
+
+// AddressLine2Cleared returns if the "address_line_2" field was cleared in this mutation.
+func (m *InviteeMutation) AddressLine2Cleared() bool {
+	_, ok := m.clearedFields[invitee.FieldAddressLine2]
+	return ok
+}
+
+// ResetAddressLine2 resets all changes to the "address_line_2" field.
+func (m *InviteeMutation) ResetAddressLine2() {
+	m.address_line_2 = nil
+	delete(m.clearedFields, invitee.FieldAddressLine2)
+}
+
+// SetAddressCity sets the "address_city" field.
+func (m *InviteeMutation) SetAddressCity(s string) {
+	m.address_city = &s
+}
+
+// AddressCity returns the value of the "address_city" field in the mutation.
+func (m *InviteeMutation) AddressCity() (r string, exists bool) {
+	v := m.address_city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddressCity returns the old "address_city" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldAddressCity(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAddressCity is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAddressCity requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddressCity: %w", err)
+	}
+	return oldValue.AddressCity, nil
+}
+
+// ClearAddressCity clears the value of the "address_city" field.
+func (m *InviteeMutation) ClearAddressCity() {
+	m.address_city = nil
+	m.clearedFields[invitee.FieldAddressCity] = struct{}{}
+}
+
+// AddressCityCleared returns if the "address_city" field was cleared in this mutation.
+func (m *InviteeMutation) AddressCityCleared() bool {
+	_, ok := m.clearedFields[invitee.FieldAddressCity]
+	return ok
+}
+
+// ResetAddressCity resets all changes to the "address_city" field.
+func (m *InviteeMutation) ResetAddressCity() {
+	m.address_city = nil
+	delete(m.clearedFields, invitee.FieldAddressCity)
+}
+
+// SetAddressState sets the "address_state" field.
+func (m *InviteeMutation) SetAddressState(s string) {
+	m.address_state = &s
+}
+
+// AddressState returns the value of the "address_state" field in the mutation.
+func (m *InviteeMutation) AddressState() (r string, exists bool) {
+	v := m.address_state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddressState returns the old "address_state" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldAddressState(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAddressState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAddressState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddressState: %w", err)
+	}
+	return oldValue.AddressState, nil
+}
+
+// ClearAddressState clears the value of the "address_state" field.
+func (m *InviteeMutation) ClearAddressState() {
+	m.address_state = nil
+	m.clearedFields[invitee.FieldAddressState] = struct{}{}
+}
+
+// AddressStateCleared returns if the "address_state" field was cleared in this mutation.
+func (m *InviteeMutation) AddressStateCleared() bool {
+	_, ok := m.clearedFields[invitee.FieldAddressState]
+	return ok
+}
+
+// ResetAddressState resets all changes to the "address_state" field.
+func (m *InviteeMutation) ResetAddressState() {
+	m.address_state = nil
+	delete(m.clearedFields, invitee.FieldAddressState)
+}
+
+// SetAddressPostalCode sets the "address_postal_code" field.
+func (m *InviteeMutation) SetAddressPostalCode(s string) {
+	m.address_postal_code = &s
+}
+
+// AddressPostalCode returns the value of the "address_postal_code" field in the mutation.
+func (m *InviteeMutation) AddressPostalCode() (r string, exists bool) {
+	v := m.address_postal_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddressPostalCode returns the old "address_postal_code" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldAddressPostalCode(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAddressPostalCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAddressPostalCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddressPostalCode: %w", err)
+	}
+	return oldValue.AddressPostalCode, nil
+}
+
+// ClearAddressPostalCode clears the value of the "address_postal_code" field.
+func (m *InviteeMutation) ClearAddressPostalCode() {
+	m.address_postal_code = nil
+	m.clearedFields[invitee.FieldAddressPostalCode] = struct{}{}
+}
+
+// AddressPostalCodeCleared returns if the "address_postal_code" field was cleared in this mutation.
+func (m *InviteeMutation) AddressPostalCodeCleared() bool {
+	_, ok := m.clearedFields[invitee.FieldAddressPostalCode]
+	return ok
+}
+
+// ResetAddressPostalCode resets all changes to the "address_postal_code" field.
+func (m *InviteeMutation) ResetAddressPostalCode() {
+	m.address_postal_code = nil
+	delete(m.clearedFields, invitee.FieldAddressPostalCode)
+}
+
+// SetAddressCountry sets the "address_country" field.
+func (m *InviteeMutation) SetAddressCountry(s string) {
+	m.address_country = &s
+}
+
+// AddressCountry returns the value of the "address_country" field in the mutation.
+func (m *InviteeMutation) AddressCountry() (r string, exists bool) {
+	v := m.address_country
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddressCountry returns the old "address_country" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldAddressCountry(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAddressCountry is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAddressCountry requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddressCountry: %w", err)
+	}
+	return oldValue.AddressCountry, nil
+}
+
+// ClearAddressCountry clears the value of the "address_country" field.
+func (m *InviteeMutation) ClearAddressCountry() {
+	m.address_country = nil
+	m.clearedFields[invitee.FieldAddressCountry] = struct{}{}
+}
+
+// AddressCountryCleared returns if the "address_country" field was cleared in this mutation.
+func (m *InviteeMutation) AddressCountryCleared() bool {
+	_, ok := m.clearedFields[invitee.FieldAddressCountry]
+	return ok
+}
+
+// ResetAddressCountry resets all changes to the "address_country" field.
+func (m *InviteeMutation) ResetAddressCountry() {
+	m.address_country = nil
+	delete(m.clearedFields, invitee.FieldAddressCountry)
+}
+
 // SetPartyID sets the "party" edge to the InviteeParty entity by id.
 func (m *InviteeMutation) SetPartyID(id int) {
 	m.party = &id
@@ -552,9 +1089,42 @@ func (m *InviteeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *InviteeMutation) Fields() []string {
-	fields := make([]string, 0, 1)
+	fields := make([]string, 0, 12)
 	if m.name != nil {
 		fields = append(fields, invitee.FieldName)
+	}
+	if m.is_child != nil {
+		fields = append(fields, invitee.FieldIsChild)
+	}
+	if m.has_plus_one != nil {
+		fields = append(fields, invitee.FieldHasPlusOne)
+	}
+	if m.plus_one_name != nil {
+		fields = append(fields, invitee.FieldPlusOneName)
+	}
+	if m.phone != nil {
+		fields = append(fields, invitee.FieldPhone)
+	}
+	if m.email != nil {
+		fields = append(fields, invitee.FieldEmail)
+	}
+	if m.address_line_1 != nil {
+		fields = append(fields, invitee.FieldAddressLine1)
+	}
+	if m.address_line_2 != nil {
+		fields = append(fields, invitee.FieldAddressLine2)
+	}
+	if m.address_city != nil {
+		fields = append(fields, invitee.FieldAddressCity)
+	}
+	if m.address_state != nil {
+		fields = append(fields, invitee.FieldAddressState)
+	}
+	if m.address_postal_code != nil {
+		fields = append(fields, invitee.FieldAddressPostalCode)
+	}
+	if m.address_country != nil {
+		fields = append(fields, invitee.FieldAddressCountry)
 	}
 	return fields
 }
@@ -566,6 +1136,28 @@ func (m *InviteeMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case invitee.FieldName:
 		return m.Name()
+	case invitee.FieldIsChild:
+		return m.IsChild()
+	case invitee.FieldHasPlusOne:
+		return m.HasPlusOne()
+	case invitee.FieldPlusOneName:
+		return m.PlusOneName()
+	case invitee.FieldPhone:
+		return m.Phone()
+	case invitee.FieldEmail:
+		return m.Email()
+	case invitee.FieldAddressLine1:
+		return m.AddressLine1()
+	case invitee.FieldAddressLine2:
+		return m.AddressLine2()
+	case invitee.FieldAddressCity:
+		return m.AddressCity()
+	case invitee.FieldAddressState:
+		return m.AddressState()
+	case invitee.FieldAddressPostalCode:
+		return m.AddressPostalCode()
+	case invitee.FieldAddressCountry:
+		return m.AddressCountry()
 	}
 	return nil, false
 }
@@ -577,6 +1169,28 @@ func (m *InviteeMutation) OldField(ctx context.Context, name string) (ent.Value,
 	switch name {
 	case invitee.FieldName:
 		return m.OldName(ctx)
+	case invitee.FieldIsChild:
+		return m.OldIsChild(ctx)
+	case invitee.FieldHasPlusOne:
+		return m.OldHasPlusOne(ctx)
+	case invitee.FieldPlusOneName:
+		return m.OldPlusOneName(ctx)
+	case invitee.FieldPhone:
+		return m.OldPhone(ctx)
+	case invitee.FieldEmail:
+		return m.OldEmail(ctx)
+	case invitee.FieldAddressLine1:
+		return m.OldAddressLine1(ctx)
+	case invitee.FieldAddressLine2:
+		return m.OldAddressLine2(ctx)
+	case invitee.FieldAddressCity:
+		return m.OldAddressCity(ctx)
+	case invitee.FieldAddressState:
+		return m.OldAddressState(ctx)
+	case invitee.FieldAddressPostalCode:
+		return m.OldAddressPostalCode(ctx)
+	case invitee.FieldAddressCountry:
+		return m.OldAddressCountry(ctx)
 	}
 	return nil, fmt.Errorf("unknown Invitee field %s", name)
 }
@@ -592,6 +1206,83 @@ func (m *InviteeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case invitee.FieldIsChild:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsChild(v)
+		return nil
+	case invitee.FieldHasPlusOne:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHasPlusOne(v)
+		return nil
+	case invitee.FieldPlusOneName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlusOneName(v)
+		return nil
+	case invitee.FieldPhone:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPhone(v)
+		return nil
+	case invitee.FieldEmail:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmail(v)
+		return nil
+	case invitee.FieldAddressLine1:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddressLine1(v)
+		return nil
+	case invitee.FieldAddressLine2:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddressLine2(v)
+		return nil
+	case invitee.FieldAddressCity:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddressCity(v)
+		return nil
+	case invitee.FieldAddressState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddressState(v)
+		return nil
+	case invitee.FieldAddressPostalCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddressPostalCode(v)
+		return nil
+	case invitee.FieldAddressCountry:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddressCountry(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Invitee field %s", name)
@@ -622,7 +1313,38 @@ func (m *InviteeMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *InviteeMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(invitee.FieldIsChild) {
+		fields = append(fields, invitee.FieldIsChild)
+	}
+	if m.FieldCleared(invitee.FieldPlusOneName) {
+		fields = append(fields, invitee.FieldPlusOneName)
+	}
+	if m.FieldCleared(invitee.FieldPhone) {
+		fields = append(fields, invitee.FieldPhone)
+	}
+	if m.FieldCleared(invitee.FieldEmail) {
+		fields = append(fields, invitee.FieldEmail)
+	}
+	if m.FieldCleared(invitee.FieldAddressLine1) {
+		fields = append(fields, invitee.FieldAddressLine1)
+	}
+	if m.FieldCleared(invitee.FieldAddressLine2) {
+		fields = append(fields, invitee.FieldAddressLine2)
+	}
+	if m.FieldCleared(invitee.FieldAddressCity) {
+		fields = append(fields, invitee.FieldAddressCity)
+	}
+	if m.FieldCleared(invitee.FieldAddressState) {
+		fields = append(fields, invitee.FieldAddressState)
+	}
+	if m.FieldCleared(invitee.FieldAddressPostalCode) {
+		fields = append(fields, invitee.FieldAddressPostalCode)
+	}
+	if m.FieldCleared(invitee.FieldAddressCountry) {
+		fields = append(fields, invitee.FieldAddressCountry)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -635,6 +1357,38 @@ func (m *InviteeMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *InviteeMutation) ClearField(name string) error {
+	switch name {
+	case invitee.FieldIsChild:
+		m.ClearIsChild()
+		return nil
+	case invitee.FieldPlusOneName:
+		m.ClearPlusOneName()
+		return nil
+	case invitee.FieldPhone:
+		m.ClearPhone()
+		return nil
+	case invitee.FieldEmail:
+		m.ClearEmail()
+		return nil
+	case invitee.FieldAddressLine1:
+		m.ClearAddressLine1()
+		return nil
+	case invitee.FieldAddressLine2:
+		m.ClearAddressLine2()
+		return nil
+	case invitee.FieldAddressCity:
+		m.ClearAddressCity()
+		return nil
+	case invitee.FieldAddressState:
+		m.ClearAddressState()
+		return nil
+	case invitee.FieldAddressPostalCode:
+		m.ClearAddressPostalCode()
+		return nil
+	case invitee.FieldAddressCountry:
+		m.ClearAddressCountry()
+		return nil
+	}
 	return fmt.Errorf("unknown Invitee nullable field %s", name)
 }
 
@@ -644,6 +1398,39 @@ func (m *InviteeMutation) ResetField(name string) error {
 	switch name {
 	case invitee.FieldName:
 		m.ResetName()
+		return nil
+	case invitee.FieldIsChild:
+		m.ResetIsChild()
+		return nil
+	case invitee.FieldHasPlusOne:
+		m.ResetHasPlusOne()
+		return nil
+	case invitee.FieldPlusOneName:
+		m.ResetPlusOneName()
+		return nil
+	case invitee.FieldPhone:
+		m.ResetPhone()
+		return nil
+	case invitee.FieldEmail:
+		m.ResetEmail()
+		return nil
+	case invitee.FieldAddressLine1:
+		m.ResetAddressLine1()
+		return nil
+	case invitee.FieldAddressLine2:
+		m.ResetAddressLine2()
+		return nil
+	case invitee.FieldAddressCity:
+		m.ResetAddressCity()
+		return nil
+	case invitee.FieldAddressState:
+		m.ResetAddressState()
+		return nil
+	case invitee.FieldAddressPostalCode:
+		m.ResetAddressPostalCode()
+		return nil
+	case invitee.FieldAddressCountry:
+		m.ResetAddressCountry()
 		return nil
 	}
 	return fmt.Errorf("unknown Invitee field %s", name)
