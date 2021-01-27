@@ -185,7 +185,7 @@ func main() {
 			if gin.Mode() != gin.ReleaseMode {
 				config := cors.DefaultConfig()
 				config.AllowCredentials = true
-				config.AllowAllOrigins = true
+				config.AllowOrigins = append(config.AllowOrigins, "http://localhost:3000")
 				engine.Use(cors.New(config))
 			}
 
