@@ -99,6 +99,10 @@ func main() {
 			&ImportGuestList,
 		},
 		Action: func(ctx *cli.Context) error {
+			if gin.Mode() == gin.ReleaseMode {
+				log.SetFormatter(&log.JSONFormatter{})
+			}
+
 			// Connect to db.
 			client, err := ent.Open("postgres", getPgConnectionString(), ent.Log(log.Println))
 			if err != nil {

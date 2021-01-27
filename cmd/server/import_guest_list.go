@@ -51,9 +51,6 @@ var ImportGuestList = cli.Command{
 			return err
 		}
 
-		log.Println(row)
-		log.Exit(0)
-
 		var invitees []*ent.Invitee
 		var parties = map[string]*ent.InviteeParty{}
 
