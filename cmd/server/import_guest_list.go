@@ -78,7 +78,7 @@ var ImportGuestList = cli.Command{
 				partyName = strings.TrimSpace(read[0])
 			}
 
-			if _, ok := parties[read[1]]; !ok {
+			if _, ok := parties[partyName]; !ok {
 				party, err := tx.InviteeParty.Create().
 					SetName(partyName).
 					SetCode(util.RandomString(10)).
@@ -87,12 +87,12 @@ var ImportGuestList = cli.Command{
 					return err
 				}
 
-				parties[read[1]] = party
+				parties[partyName] = party
 			}
 
 			query := tx.Invitee.Create().
 				SetName(read[0]).
-				SetParty(parties[read[1]])
+				SetParty(parties[partyName])
 
 			if hasPlusOne := strings.ToLower(read[2]) == "true"; hasPlusOne {
 				query.SetHasPlusOne(hasPlusOne)
