@@ -46,7 +46,7 @@ var ImportGuestList = cli.Command{
 		defer reader.Close()
 		csvReader := csv.NewReader(reader)
 
-		row, err := csvReader.Read()
+		_, err = csvReader.Read()
 		if err != nil {
 			return err
 		}
