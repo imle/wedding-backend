@@ -37,13 +37,7 @@ var (
 )
 
 var (
-	authZone   string
-	authSecret string
-)
-
-var (
-	hydraAdminURL  string
-	hydraPublicURL string
+	redisUrl string
 )
 
 func main() {
@@ -92,28 +86,10 @@ func main() {
 				Value: false,
 			},
 			&cli.StringFlag{
-				Name:        "auth-zone",
-				Destination: &authZone,
-				EnvVars:     []string{"AUTH_ZONE"},
-				Value:       "default",
-			},
-			&cli.StringFlag{
-				Name:        "auth-secret",
-				Destination: &authSecret,
-				EnvVars:     []string{"AUTH_SECRET"},
-				Value:       "default",
-			},
-			&cli.StringFlag{
-				Name:        "hydra-admin-url",
-				Destination: &hydraAdminURL,
-				EnvVars:     []string{"HYDRA_ADMIN_URL"},
-				Value:       "https://admin.hydra.imle.io",
-			},
-			&cli.StringFlag{
-				Name:        "hydra-public-url",
-				Destination: &hydraPublicURL,
-				EnvVars:     []string{"HYDRA_PUBLIC_URL"},
-				Value:       "https://hydra.imle.io",
+				Name:        "redis-url",
+				Destination: &redisUrl,
+				EnvVars:     []string{"REDIS_URL"},
+				Value:       "localhost:6379",
 			},
 		},
 		Commands: []*cli.Command{
@@ -199,7 +175,7 @@ func main() {
 			engine.RemoveExtraSlash = true
 
 			// Setup sessions
-			store, err := redis.NewStore(10, "tcp", "localhost:6379", "", []byte("secret"))
+			store, err := redis.NewStore(10, "tcp", redisUrl, "", []byte("secret"))
 			if err != nil {
 				return err
 			}
