@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -14,7 +15,8 @@ import (
 )
 
 var (
-	csvFile string
+	csvFile         string
+	shouldDeleteAll bool
 )
 
 var ImportGuestList = cli.Command{
@@ -24,14 +26,32 @@ var ImportGuestList = cli.Command{
 		&cli.StringFlag{
 			Name:        "csv",
 			Destination: &csvFile,
+			TakesFile:   true,
+		},
+		&cli.BoolFlag{
+			Name:        "clean",
+			Destination: &shouldDeleteAll,
 		},
 	},
 	Action: func(ctx *cli.Context) error {
+		if shouldDeleteAll {
+			shouldContinue := askForConfirmation("Are you sure you want to clear the db?", false)
+
+			if !shouldContinue {
+				log.Exit(2)
+			}
+		}
+
 		client, err := ent.Open("postgres", getPgConnectionString(), ent.Log(log.Println))
 		if err != nil {
 			return err
 		}
 		defer client.Close()
+
+		if shouldDeleteAll {
+			client.Invitee.Delete().ExecX(ctx.Context)
+			client.InviteeParty.Delete().ExecX(ctx.Context)
+		}
 
 		var reader io.ReadCloser
 		if csvFile != "" {
@@ -141,4 +161,29 @@ var ImportGuestList = cli.Command{
 
 		return nil
 	},
+}
+
+func askForConfirmation(text string, defaultValue bool) bool {
+	var response string
+
+	fmt.Printf("%s ", text)
+	if defaultValue {
+		fmt.Print("[Y/n]: ")
+	} else {
+		fmt.Print("[y/N]: ")
+	}
+
+	_, err := fmt.Scanln(&response)
+	if err != nil {
+		return defaultValue
+	}
+
+	switch strings.ToLower(response) {
+	case "y", "yes":
+		return true
+	case "n", "no":
+		return false
+	default:
+		return defaultValue
+	}
 }

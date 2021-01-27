@@ -41,7 +41,9 @@ func (api *APIv1) queryByInviteeForParty(c *gin.Context) {
 	matches := api.database.Invitee.Query().
 		Where(invitee.NameContainsFold(name)).
 		QueryParty().
-		WithInvitees().
+		WithInvitees(func(query *ent.InviteeQuery) {
+			query.Order(ent.Asc(invitee.FieldIsChild, invitee.FieldID))
+		}).
 		AllX(c)
 
 	c.JSON(http.StatusOK, gin.H{
