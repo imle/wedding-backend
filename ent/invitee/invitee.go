@@ -31,6 +31,8 @@ const (
 	FieldAddressPostalCode = "address_postal_code"
 	// FieldAddressCountry holds the string denoting the address_country field in the database.
 	FieldAddressCountry = "address_country"
+	// FieldRsvpResponse holds the string denoting the rsvp_response field in the database.
+	FieldRsvpResponse = "rsvp_response"
 
 	// EdgeParty holds the string denoting the party edge name in mutations.
 	EdgeParty = "party"
@@ -61,6 +63,7 @@ var Columns = []string{
 	FieldAddressState,
 	FieldAddressPostalCode,
 	FieldAddressCountry,
+	FieldRsvpResponse,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the Invitee type.
@@ -90,4 +93,6 @@ var (
 	DefaultIsChild bool
 	// DefaultHasPlusOne holds the default value on creation for the "has_plus_one" field.
 	DefaultHasPlusOne bool
+	// DefaultRsvpResponse holds the default value on creation for the "rsvp_response" field.
+	DefaultRsvpResponse bool
 )

@@ -40,6 +40,8 @@ type Invitee struct {
 	AddressPostalCode *string `json:"address_postal_code,omitempty"`
 	// AddressCountry holds the value of the "address_country" field.
 	AddressCountry *string `json:"address_country,omitempty"`
+	// RsvpResponse holds the value of the "rsvp_response" field.
+	RsvpResponse bool `json:"rsvp_response,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the InviteeQuery when eager-loading is set.
 	Edges                  InviteeEdges `json:"edges"`
@@ -74,7 +76,7 @@ func (*Invitee) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case invitee.FieldIsChild, invitee.FieldHasPlusOne:
+		case invitee.FieldIsChild, invitee.FieldHasPlusOne, invitee.FieldRsvpResponse:
 			values[i] = &sql.NullBool{}
 		case invitee.FieldID:
 			values[i] = &sql.NullInt64{}
@@ -185,6 +187,12 @@ func (i *Invitee) assignValues(columns []string, values []interface{}) error {
 				i.AddressCountry = new(string)
 				*i.AddressCountry = value.String
 			}
+		case invitee.FieldRsvpResponse:
+			if value, ok := values[j].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field rsvp_response", values[j])
+			} else if value.Valid {
+				i.RsvpResponse = value.Bool
+			}
 		case invitee.ForeignKeys[0]:
 			if value, ok := values[j].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field invitee_party_invitees", value)
@@ -269,6 +277,8 @@ func (i *Invitee) String() string {
 		builder.WriteString(", address_country=")
 		builder.WriteString(*v)
 	}
+	builder.WriteString(", rsvp_response=")
+	builder.WriteString(fmt.Sprintf("%v", i.RsvpResponse))
 	builder.WriteByte(')')
 	return builder.String()
 }

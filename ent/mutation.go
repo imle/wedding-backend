@@ -387,6 +387,7 @@ type InviteeMutation struct {
 	address_state       *string
 	address_postal_code *string
 	address_country     *string
+	rsvp_response       *bool
 	clearedFields       map[string]struct{}
 	party               *int
 	clearedparty        bool
@@ -1036,6 +1037,42 @@ func (m *InviteeMutation) ResetAddressCountry() {
 	delete(m.clearedFields, invitee.FieldAddressCountry)
 }
 
+// SetRsvpResponse sets the "rsvp_response" field.
+func (m *InviteeMutation) SetRsvpResponse(b bool) {
+	m.rsvp_response = &b
+}
+
+// RsvpResponse returns the value of the "rsvp_response" field in the mutation.
+func (m *InviteeMutation) RsvpResponse() (r bool, exists bool) {
+	v := m.rsvp_response
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRsvpResponse returns the old "rsvp_response" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldRsvpResponse(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRsvpResponse is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRsvpResponse requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRsvpResponse: %w", err)
+	}
+	return oldValue.RsvpResponse, nil
+}
+
+// ResetRsvpResponse resets all changes to the "rsvp_response" field.
+func (m *InviteeMutation) ResetRsvpResponse() {
+	m.rsvp_response = nil
+}
+
 // SetPartyID sets the "party" edge to the InviteeParty entity by id.
 func (m *InviteeMutation) SetPartyID(id int) {
 	m.party = &id
@@ -1089,7 +1126,7 @@ func (m *InviteeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *InviteeMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.name != nil {
 		fields = append(fields, invitee.FieldName)
 	}
@@ -1126,6 +1163,9 @@ func (m *InviteeMutation) Fields() []string {
 	if m.address_country != nil {
 		fields = append(fields, invitee.FieldAddressCountry)
 	}
+	if m.rsvp_response != nil {
+		fields = append(fields, invitee.FieldRsvpResponse)
+	}
 	return fields
 }
 
@@ -1158,6 +1198,8 @@ func (m *InviteeMutation) Field(name string) (ent.Value, bool) {
 		return m.AddressPostalCode()
 	case invitee.FieldAddressCountry:
 		return m.AddressCountry()
+	case invitee.FieldRsvpResponse:
+		return m.RsvpResponse()
 	}
 	return nil, false
 }
@@ -1191,6 +1233,8 @@ func (m *InviteeMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldAddressPostalCode(ctx)
 	case invitee.FieldAddressCountry:
 		return m.OldAddressCountry(ctx)
+	case invitee.FieldRsvpResponse:
+		return m.OldRsvpResponse(ctx)
 	}
 	return nil, fmt.Errorf("unknown Invitee field %s", name)
 }
@@ -1283,6 +1327,13 @@ func (m *InviteeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAddressCountry(v)
+		return nil
+	case invitee.FieldRsvpResponse:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRsvpResponse(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Invitee field %s", name)
@@ -1431,6 +1482,9 @@ func (m *InviteeMutation) ResetField(name string) error {
 		return nil
 	case invitee.FieldAddressCountry:
 		m.ResetAddressCountry()
+		return nil
+	case invitee.FieldRsvpResponse:
+		m.ResetRsvpResponse()
 		return nil
 	}
 	return fmt.Errorf("unknown Invitee field %s", name)

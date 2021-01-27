@@ -180,6 +180,20 @@ func (ic *InviteeCreate) SetNillableAddressCountry(s *string) *InviteeCreate {
 	return ic
 }
 
+// SetRsvpResponse sets the "rsvp_response" field.
+func (ic *InviteeCreate) SetRsvpResponse(b bool) *InviteeCreate {
+	ic.mutation.SetRsvpResponse(b)
+	return ic
+}
+
+// SetNillableRsvpResponse sets the "rsvp_response" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillableRsvpResponse(b *bool) *InviteeCreate {
+	if b != nil {
+		ic.SetRsvpResponse(*b)
+	}
+	return ic
+}
+
 // SetPartyID sets the "party" edge to the InviteeParty entity by ID.
 func (ic *InviteeCreate) SetPartyID(id int) *InviteeCreate {
 	ic.mutation.SetPartyID(id)
@@ -259,6 +273,10 @@ func (ic *InviteeCreate) defaults() {
 		v := invitee.DefaultHasPlusOne
 		ic.mutation.SetHasPlusOne(v)
 	}
+	if _, ok := ic.mutation.RsvpResponse(); !ok {
+		v := invitee.DefaultRsvpResponse
+		ic.mutation.SetRsvpResponse(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -273,6 +291,9 @@ func (ic *InviteeCreate) check() error {
 	}
 	if _, ok := ic.mutation.HasPlusOne(); !ok {
 		return &ValidationError{Name: "has_plus_one", err: errors.New("ent: missing required field \"has_plus_one\"")}
+	}
+	if _, ok := ic.mutation.RsvpResponse(); !ok {
+		return &ValidationError{Name: "rsvp_response", err: errors.New("ent: missing required field \"rsvp_response\"")}
 	}
 	return nil
 }
@@ -396,6 +417,14 @@ func (ic *InviteeCreate) createSpec() (*Invitee, *sqlgraph.CreateSpec) {
 			Column: invitee.FieldAddressCountry,
 		})
 		_node.AddressCountry = &value
+	}
+	if value, ok := ic.mutation.RsvpResponse(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: invitee.FieldRsvpResponse,
+		})
+		_node.RsvpResponse = value
 	}
 	if nodes := ic.mutation.PartyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

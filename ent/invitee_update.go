@@ -247,6 +247,20 @@ func (iu *InviteeUpdate) ClearAddressCountry() *InviteeUpdate {
 	return iu
 }
 
+// SetRsvpResponse sets the "rsvp_response" field.
+func (iu *InviteeUpdate) SetRsvpResponse(b bool) *InviteeUpdate {
+	iu.mutation.SetRsvpResponse(b)
+	return iu
+}
+
+// SetNillableRsvpResponse sets the "rsvp_response" field if the given value is not nil.
+func (iu *InviteeUpdate) SetNillableRsvpResponse(b *bool) *InviteeUpdate {
+	if b != nil {
+		iu.SetRsvpResponse(*b)
+	}
+	return iu
+}
+
 // SetPartyID sets the "party" edge to the InviteeParty entity by ID.
 func (iu *InviteeUpdate) SetPartyID(id int) *InviteeUpdate {
 	iu.mutation.SetPartyID(id)
@@ -504,6 +518,13 @@ func (iu *InviteeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: invitee.FieldAddressCountry,
+		})
+	}
+	if value, ok := iu.mutation.RsvpResponse(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: invitee.FieldRsvpResponse,
 		})
 	}
 	if iu.mutation.PartyCleared() {
@@ -779,6 +800,20 @@ func (iuo *InviteeUpdateOne) ClearAddressCountry() *InviteeUpdateOne {
 	return iuo
 }
 
+// SetRsvpResponse sets the "rsvp_response" field.
+func (iuo *InviteeUpdateOne) SetRsvpResponse(b bool) *InviteeUpdateOne {
+	iuo.mutation.SetRsvpResponse(b)
+	return iuo
+}
+
+// SetNillableRsvpResponse sets the "rsvp_response" field if the given value is not nil.
+func (iuo *InviteeUpdateOne) SetNillableRsvpResponse(b *bool) *InviteeUpdateOne {
+	if b != nil {
+		iuo.SetRsvpResponse(*b)
+	}
+	return iuo
+}
+
 // SetPartyID sets the "party" edge to the InviteeParty entity by ID.
 func (iuo *InviteeUpdateOne) SetPartyID(id int) *InviteeUpdateOne {
 	iuo.mutation.SetPartyID(id)
@@ -1034,6 +1069,13 @@ func (iuo *InviteeUpdateOne) sqlSave(ctx context.Context) (_node *Invitee, err e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: invitee.FieldAddressCountry,
+		})
+	}
+	if value, ok := iuo.mutation.RsvpResponse(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: invitee.FieldRsvpResponse,
 		})
 	}
 	if iuo.mutation.PartyCleared() {

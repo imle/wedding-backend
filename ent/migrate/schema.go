@@ -36,6 +36,7 @@ var (
 		{Name: "address_state", Type: field.TypeString, Nullable: true},
 		{Name: "address_postal_code", Type: field.TypeString, Nullable: true},
 		{Name: "address_country", Type: field.TypeString, Nullable: true},
+		{Name: "rsvp_response", Type: field.TypeBool},
 		{Name: "invitee_party_invitees", Type: field.TypeInt, Nullable: true},
 	}
 	// InviteesTable holds the schema information for the "invitees" table.
@@ -46,7 +47,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:  "invitees_invitee_parties_invitees",
-				Columns: []*schema.Column{InviteesColumns[13]},
+				Columns: []*schema.Column{InviteesColumns[14]},
 
 				RefColumns: []*schema.Column{InviteePartiesColumns[0]},
 				OnDelete:   schema.SetNull,

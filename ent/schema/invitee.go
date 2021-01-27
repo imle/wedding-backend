@@ -39,6 +39,8 @@ func (Invitee) Fields() []ent.Field {
 			Optional().Nillable(),
 		field.String("address_country").
 			Optional().Nillable(),
+		field.Bool("rsvp_response").
+			Default(false),
 	}
 }
 

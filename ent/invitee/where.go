@@ -176,6 +176,13 @@ func AddressCountry(v string) predicate.Invitee {
 	})
 }
 
+// RsvpResponse applies equality check predicate on the "rsvp_response" field. It's identical to RsvpResponseEQ.
+func RsvpResponse(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRsvpResponse), v))
+	})
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Invitee {
 	return predicate.Invitee(func(s *sql.Selector) {
@@ -1451,6 +1458,20 @@ func AddressCountryEqualFold(v string) predicate.Invitee {
 func AddressCountryContainsFold(v string) predicate.Invitee {
 	return predicate.Invitee(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldAddressCountry), v))
+	})
+}
+
+// RsvpResponseEQ applies the EQ predicate on the "rsvp_response" field.
+func RsvpResponseEQ(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRsvpResponse), v))
+	})
+}
+
+// RsvpResponseNEQ applies the NEQ predicate on the "rsvp_response" field.
+func RsvpResponseNEQ(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRsvpResponse), v))
 	})
 }
 

@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"wedding/ent"
+	"wedding/ent/invitee"
+	"wedding/ent/inviteeparty"
 )
 
 type AdminAPIv1 struct {
@@ -26,7 +28,10 @@ func RegisterAdminAPIv1(database *ent.Client, g *gin.RouterGroup) *AdminAPIv1 {
 
 func (api *AdminAPIv1) getAllParties(c *gin.Context) {
 	result, _ := api.database.InviteeParty.Query().
-		WithInvitees().
+		Order(ent.Asc(inviteeparty.FieldName)).
+		WithInvitees(func(query *ent.InviteeQuery) {
+			query.Order(ent.Asc(invitee.FieldName))
+		}).
 		All(c)
 
 	c.JSON(http.StatusOK, gin.H{

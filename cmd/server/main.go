@@ -195,6 +195,8 @@ func main() {
 
 			// Setup gin.
 			var engine = gin.Default()
+			engine.RedirectTrailingSlash = false
+			engine.RemoveExtraSlash = true
 
 			// Setup sessions
 			store, err := redis.NewStore(10, "tcp", "localhost:6379", "", []byte("secret"))
@@ -204,13 +206,18 @@ func main() {
 			engine.Use(sessions.Sessions("wedding", store))
 
 			// Setup CORS.
-			engine.Use(cors.New(cors.Config{
+			config := cors.Config{
 				AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
 				AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 				AllowCredentials: true,
-				AllowOrigins:     []string{"*"},
 				MaxAge:           12 * time.Hour,
-			}))
+			}
+
+			if gin.Mode() != gin.ReleaseMode {
+				config.AllowOrigins = append(config.AllowOrigins, "http://localhost:3000")
+			}
+
+			engine.Use(cors.New(config))
 
 			// Register data handlers.
 			router := engine.Group("/api")
