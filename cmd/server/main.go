@@ -182,18 +182,12 @@ func main() {
 			engine.Use(sessions.Sessions("wedding", store))
 
 			// Setup CORS.
-			config := cors.Config{
-				AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
-				AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
-				AllowCredentials: true,
-				MaxAge:           12 * time.Hour,
-			}
-
 			if gin.Mode() != gin.ReleaseMode {
-				config.AllowOrigins = append(config.AllowOrigins, "http://localhost:3000")
+				config := cors.DefaultConfig()
+				config.AllowCredentials = true
+				config.AllowAllOrigins = true
+				engine.Use(cors.New(config))
 			}
-
-			engine.Use(cors.New(config))
 
 			// Register data handlers.
 			router := engine.Group("/api")
