@@ -67,6 +67,34 @@ func (iu *InviteeUpdate) SetNillableHasPlusOne(b *bool) *InviteeUpdate {
 	return iu
 }
 
+// SetIsBridesmaid sets the "is_bridesmaid" field.
+func (iu *InviteeUpdate) SetIsBridesmaid(b bool) *InviteeUpdate {
+	iu.mutation.SetIsBridesmaid(b)
+	return iu
+}
+
+// SetNillableIsBridesmaid sets the "is_bridesmaid" field if the given value is not nil.
+func (iu *InviteeUpdate) SetNillableIsBridesmaid(b *bool) *InviteeUpdate {
+	if b != nil {
+		iu.SetIsBridesmaid(*b)
+	}
+	return iu
+}
+
+// SetIsGroomsman sets the "is_groomsman" field.
+func (iu *InviteeUpdate) SetIsGroomsman(b bool) *InviteeUpdate {
+	iu.mutation.SetIsGroomsman(b)
+	return iu
+}
+
+// SetNillableIsGroomsman sets the "is_groomsman" field if the given value is not nil.
+func (iu *InviteeUpdate) SetNillableIsGroomsman(b *bool) *InviteeUpdate {
+	if b != nil {
+		iu.SetIsGroomsman(*b)
+	}
+	return iu
+}
+
 // SetPlusOneName sets the "plus_one_name" field.
 func (iu *InviteeUpdate) SetPlusOneName(s string) *InviteeUpdate {
 	iu.mutation.SetPlusOneName(s)
@@ -403,6 +431,20 @@ func (iu *InviteeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: invitee.FieldHasPlusOne,
 		})
 	}
+	if value, ok := iu.mutation.IsBridesmaid(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: invitee.FieldIsBridesmaid,
+		})
+	}
+	if value, ok := iu.mutation.IsGroomsman(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: invitee.FieldIsGroomsman,
+		})
+	}
 	if value, ok := iu.mutation.PlusOneName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -616,6 +658,34 @@ func (iuo *InviteeUpdateOne) SetHasPlusOne(b bool) *InviteeUpdateOne {
 func (iuo *InviteeUpdateOne) SetNillableHasPlusOne(b *bool) *InviteeUpdateOne {
 	if b != nil {
 		iuo.SetHasPlusOne(*b)
+	}
+	return iuo
+}
+
+// SetIsBridesmaid sets the "is_bridesmaid" field.
+func (iuo *InviteeUpdateOne) SetIsBridesmaid(b bool) *InviteeUpdateOne {
+	iuo.mutation.SetIsBridesmaid(b)
+	return iuo
+}
+
+// SetNillableIsBridesmaid sets the "is_bridesmaid" field if the given value is not nil.
+func (iuo *InviteeUpdateOne) SetNillableIsBridesmaid(b *bool) *InviteeUpdateOne {
+	if b != nil {
+		iuo.SetIsBridesmaid(*b)
+	}
+	return iuo
+}
+
+// SetIsGroomsman sets the "is_groomsman" field.
+func (iuo *InviteeUpdateOne) SetIsGroomsman(b bool) *InviteeUpdateOne {
+	iuo.mutation.SetIsGroomsman(b)
+	return iuo
+}
+
+// SetNillableIsGroomsman sets the "is_groomsman" field if the given value is not nil.
+func (iuo *InviteeUpdateOne) SetNillableIsGroomsman(b *bool) *InviteeUpdateOne {
+	if b != nil {
+		iuo.SetIsGroomsman(*b)
 	}
 	return iuo
 }
@@ -952,6 +1022,20 @@ func (iuo *InviteeUpdateOne) sqlSave(ctx context.Context) (_node *Invitee, err e
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: invitee.FieldHasPlusOne,
+		})
+	}
+	if value, ok := iuo.mutation.IsBridesmaid(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: invitee.FieldIsBridesmaid,
+		})
+	}
+	if value, ok := iuo.mutation.IsGroomsman(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: invitee.FieldIsGroomsman,
 		})
 	}
 	if value, ok := iuo.mutation.PlusOneName(); ok {

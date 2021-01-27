@@ -13,6 +13,10 @@ const (
 	FieldIsChild = "is_child"
 	// FieldHasPlusOne holds the string denoting the has_plus_one field in the database.
 	FieldHasPlusOne = "has_plus_one"
+	// FieldIsBridesmaid holds the string denoting the is_bridesmaid field in the database.
+	FieldIsBridesmaid = "is_bridesmaid"
+	// FieldIsGroomsman holds the string denoting the is_groomsman field in the database.
+	FieldIsGroomsman = "is_groomsman"
 	// FieldPlusOneName holds the string denoting the plus_one_name field in the database.
 	FieldPlusOneName = "plus_one_name"
 	// FieldPhone holds the string denoting the phone field in the database.
@@ -54,6 +58,8 @@ var Columns = []string{
 	FieldName,
 	FieldIsChild,
 	FieldHasPlusOne,
+	FieldIsBridesmaid,
+	FieldIsGroomsman,
 	FieldPlusOneName,
 	FieldPhone,
 	FieldEmail,
@@ -93,6 +99,10 @@ var (
 	DefaultIsChild bool
 	// DefaultHasPlusOne holds the default value on creation for the "has_plus_one" field.
 	DefaultHasPlusOne bool
+	// DefaultIsBridesmaid holds the default value on creation for the "is_bridesmaid" field.
+	DefaultIsBridesmaid bool
+	// DefaultIsGroomsman holds the default value on creation for the "is_groomsman" field.
+	DefaultIsGroomsman bool
 	// DefaultRsvpResponse holds the default value on creation for the "rsvp_response" field.
 	DefaultRsvpResponse bool
 )

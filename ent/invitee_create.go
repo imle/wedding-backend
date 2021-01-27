@@ -54,6 +54,34 @@ func (ic *InviteeCreate) SetNillableHasPlusOne(b *bool) *InviteeCreate {
 	return ic
 }
 
+// SetIsBridesmaid sets the "is_bridesmaid" field.
+func (ic *InviteeCreate) SetIsBridesmaid(b bool) *InviteeCreate {
+	ic.mutation.SetIsBridesmaid(b)
+	return ic
+}
+
+// SetNillableIsBridesmaid sets the "is_bridesmaid" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillableIsBridesmaid(b *bool) *InviteeCreate {
+	if b != nil {
+		ic.SetIsBridesmaid(*b)
+	}
+	return ic
+}
+
+// SetIsGroomsman sets the "is_groomsman" field.
+func (ic *InviteeCreate) SetIsGroomsman(b bool) *InviteeCreate {
+	ic.mutation.SetIsGroomsman(b)
+	return ic
+}
+
+// SetNillableIsGroomsman sets the "is_groomsman" field if the given value is not nil.
+func (ic *InviteeCreate) SetNillableIsGroomsman(b *bool) *InviteeCreate {
+	if b != nil {
+		ic.SetIsGroomsman(*b)
+	}
+	return ic
+}
+
 // SetPlusOneName sets the "plus_one_name" field.
 func (ic *InviteeCreate) SetPlusOneName(s string) *InviteeCreate {
 	ic.mutation.SetPlusOneName(s)
@@ -273,6 +301,14 @@ func (ic *InviteeCreate) defaults() {
 		v := invitee.DefaultHasPlusOne
 		ic.mutation.SetHasPlusOne(v)
 	}
+	if _, ok := ic.mutation.IsBridesmaid(); !ok {
+		v := invitee.DefaultIsBridesmaid
+		ic.mutation.SetIsBridesmaid(v)
+	}
+	if _, ok := ic.mutation.IsGroomsman(); !ok {
+		v := invitee.DefaultIsGroomsman
+		ic.mutation.SetIsGroomsman(v)
+	}
 	if _, ok := ic.mutation.RsvpResponse(); !ok {
 		v := invitee.DefaultRsvpResponse
 		ic.mutation.SetRsvpResponse(v)
@@ -291,6 +327,12 @@ func (ic *InviteeCreate) check() error {
 	}
 	if _, ok := ic.mutation.HasPlusOne(); !ok {
 		return &ValidationError{Name: "has_plus_one", err: errors.New("ent: missing required field \"has_plus_one\"")}
+	}
+	if _, ok := ic.mutation.IsBridesmaid(); !ok {
+		return &ValidationError{Name: "is_bridesmaid", err: errors.New("ent: missing required field \"is_bridesmaid\"")}
+	}
+	if _, ok := ic.mutation.IsGroomsman(); !ok {
+		return &ValidationError{Name: "is_groomsman", err: errors.New("ent: missing required field \"is_groomsman\"")}
 	}
 	if _, ok := ic.mutation.RsvpResponse(); !ok {
 		return &ValidationError{Name: "rsvp_response", err: errors.New("ent: missing required field \"rsvp_response\"")}
@@ -345,6 +387,22 @@ func (ic *InviteeCreate) createSpec() (*Invitee, *sqlgraph.CreateSpec) {
 			Column: invitee.FieldHasPlusOne,
 		})
 		_node.HasPlusOne = value
+	}
+	if value, ok := ic.mutation.IsBridesmaid(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: invitee.FieldIsBridesmaid,
+		})
+		_node.IsBridesmaid = value
+	}
+	if value, ok := ic.mutation.IsGroomsman(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: invitee.FieldIsGroomsman,
+		})
+		_node.IsGroomsman = value
 	}
 	if value, ok := ic.mutation.PlusOneName(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

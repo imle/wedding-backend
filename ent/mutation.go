@@ -378,6 +378,8 @@ type InviteeMutation struct {
 	name                *string
 	is_child            *bool
 	has_plus_one        *bool
+	is_bridesmaid       *bool
+	is_groomsman        *bool
 	plus_one_name       *string
 	phone               *string
 	email               *string
@@ -594,6 +596,78 @@ func (m *InviteeMutation) OldHasPlusOne(ctx context.Context) (v bool, err error)
 // ResetHasPlusOne resets all changes to the "has_plus_one" field.
 func (m *InviteeMutation) ResetHasPlusOne() {
 	m.has_plus_one = nil
+}
+
+// SetIsBridesmaid sets the "is_bridesmaid" field.
+func (m *InviteeMutation) SetIsBridesmaid(b bool) {
+	m.is_bridesmaid = &b
+}
+
+// IsBridesmaid returns the value of the "is_bridesmaid" field in the mutation.
+func (m *InviteeMutation) IsBridesmaid() (r bool, exists bool) {
+	v := m.is_bridesmaid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsBridesmaid returns the old "is_bridesmaid" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldIsBridesmaid(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsBridesmaid is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsBridesmaid requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsBridesmaid: %w", err)
+	}
+	return oldValue.IsBridesmaid, nil
+}
+
+// ResetIsBridesmaid resets all changes to the "is_bridesmaid" field.
+func (m *InviteeMutation) ResetIsBridesmaid() {
+	m.is_bridesmaid = nil
+}
+
+// SetIsGroomsman sets the "is_groomsman" field.
+func (m *InviteeMutation) SetIsGroomsman(b bool) {
+	m.is_groomsman = &b
+}
+
+// IsGroomsman returns the value of the "is_groomsman" field in the mutation.
+func (m *InviteeMutation) IsGroomsman() (r bool, exists bool) {
+	v := m.is_groomsman
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsGroomsman returns the old "is_groomsman" field's value of the Invitee entity.
+// If the Invitee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InviteeMutation) OldIsGroomsman(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsGroomsman is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsGroomsman requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsGroomsman: %w", err)
+	}
+	return oldValue.IsGroomsman, nil
+}
+
+// ResetIsGroomsman resets all changes to the "is_groomsman" field.
+func (m *InviteeMutation) ResetIsGroomsman() {
+	m.is_groomsman = nil
 }
 
 // SetPlusOneName sets the "plus_one_name" field.
@@ -1126,7 +1200,7 @@ func (m *InviteeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *InviteeMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 15)
 	if m.name != nil {
 		fields = append(fields, invitee.FieldName)
 	}
@@ -1135,6 +1209,12 @@ func (m *InviteeMutation) Fields() []string {
 	}
 	if m.has_plus_one != nil {
 		fields = append(fields, invitee.FieldHasPlusOne)
+	}
+	if m.is_bridesmaid != nil {
+		fields = append(fields, invitee.FieldIsBridesmaid)
+	}
+	if m.is_groomsman != nil {
+		fields = append(fields, invitee.FieldIsGroomsman)
 	}
 	if m.plus_one_name != nil {
 		fields = append(fields, invitee.FieldPlusOneName)
@@ -1180,6 +1260,10 @@ func (m *InviteeMutation) Field(name string) (ent.Value, bool) {
 		return m.IsChild()
 	case invitee.FieldHasPlusOne:
 		return m.HasPlusOne()
+	case invitee.FieldIsBridesmaid:
+		return m.IsBridesmaid()
+	case invitee.FieldIsGroomsman:
+		return m.IsGroomsman()
 	case invitee.FieldPlusOneName:
 		return m.PlusOneName()
 	case invitee.FieldPhone:
@@ -1215,6 +1299,10 @@ func (m *InviteeMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldIsChild(ctx)
 	case invitee.FieldHasPlusOne:
 		return m.OldHasPlusOne(ctx)
+	case invitee.FieldIsBridesmaid:
+		return m.OldIsBridesmaid(ctx)
+	case invitee.FieldIsGroomsman:
+		return m.OldIsGroomsman(ctx)
 	case invitee.FieldPlusOneName:
 		return m.OldPlusOneName(ctx)
 	case invitee.FieldPhone:
@@ -1264,6 +1352,20 @@ func (m *InviteeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetHasPlusOne(v)
+		return nil
+	case invitee.FieldIsBridesmaid:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsBridesmaid(v)
+		return nil
+	case invitee.FieldIsGroomsman:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsGroomsman(v)
 		return nil
 	case invitee.FieldPlusOneName:
 		v, ok := value.(string)
@@ -1455,6 +1557,12 @@ func (m *InviteeMutation) ResetField(name string) error {
 		return nil
 	case invitee.FieldHasPlusOne:
 		m.ResetHasPlusOne()
+		return nil
+	case invitee.FieldIsBridesmaid:
+		m.ResetIsBridesmaid()
+		return nil
+	case invitee.FieldIsGroomsman:
+		m.ResetIsGroomsman()
 		return nil
 	case invitee.FieldPlusOneName:
 		m.ResetPlusOneName()

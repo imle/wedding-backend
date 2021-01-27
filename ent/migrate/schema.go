@@ -27,6 +27,8 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "is_child", Type: field.TypeBool, Nullable: true},
 		{Name: "has_plus_one", Type: field.TypeBool},
+		{Name: "is_bridesmaid", Type: field.TypeBool},
+		{Name: "is_groomsman", Type: field.TypeBool},
 		{Name: "plus_one_name", Type: field.TypeString, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "email", Type: field.TypeString, Nullable: true},
@@ -47,7 +49,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:  "invitees_invitee_parties_invitees",
-				Columns: []*schema.Column{InviteesColumns[14]},
+				Columns: []*schema.Column{InviteesColumns[16]},
 
 				RefColumns: []*schema.Column{InviteePartiesColumns[0]},
 				OnDelete:   schema.SetNull,

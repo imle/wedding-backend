@@ -113,6 +113,20 @@ func HasPlusOne(v bool) predicate.Invitee {
 	})
 }
 
+// IsBridesmaid applies equality check predicate on the "is_bridesmaid" field. It's identical to IsBridesmaidEQ.
+func IsBridesmaid(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsBridesmaid), v))
+	})
+}
+
+// IsGroomsman applies equality check predicate on the "is_groomsman" field. It's identical to IsGroomsmanEQ.
+func IsGroomsman(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsGroomsman), v))
+	})
+}
+
 // PlusOneName applies equality check predicate on the "plus_one_name" field. It's identical to PlusOneNameEQ.
 func PlusOneName(v string) predicate.Invitee {
 	return predicate.Invitee(func(s *sql.Selector) {
@@ -333,6 +347,34 @@ func HasPlusOneEQ(v bool) predicate.Invitee {
 func HasPlusOneNEQ(v bool) predicate.Invitee {
 	return predicate.Invitee(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldHasPlusOne), v))
+	})
+}
+
+// IsBridesmaidEQ applies the EQ predicate on the "is_bridesmaid" field.
+func IsBridesmaidEQ(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsBridesmaid), v))
+	})
+}
+
+// IsBridesmaidNEQ applies the NEQ predicate on the "is_bridesmaid" field.
+func IsBridesmaidNEQ(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldIsBridesmaid), v))
+	})
+}
+
+// IsGroomsmanEQ applies the EQ predicate on the "is_groomsman" field.
+func IsGroomsmanEQ(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsGroomsman), v))
+	})
+}
+
+// IsGroomsmanNEQ applies the NEQ predicate on the "is_groomsman" field.
+func IsGroomsmanNEQ(v bool) predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldIsGroomsman), v))
 	})
 }
 

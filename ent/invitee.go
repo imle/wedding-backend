@@ -22,6 +22,10 @@ type Invitee struct {
 	IsChild *bool `json:"is_child,omitempty"`
 	// HasPlusOne holds the value of the "has_plus_one" field.
 	HasPlusOne bool `json:"has_plus_one,omitempty"`
+	// IsBridesmaid holds the value of the "is_bridesmaid" field.
+	IsBridesmaid bool `json:"is_bridesmaid,omitempty"`
+	// IsGroomsman holds the value of the "is_groomsman" field.
+	IsGroomsman bool `json:"is_groomsman,omitempty"`
 	// PlusOneName holds the value of the "plus_one_name" field.
 	PlusOneName *string `json:"plus_one_name,omitempty"`
 	// Phone holds the value of the "phone" field.
@@ -76,7 +80,7 @@ func (*Invitee) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case invitee.FieldIsChild, invitee.FieldHasPlusOne, invitee.FieldRsvpResponse:
+		case invitee.FieldIsChild, invitee.FieldHasPlusOne, invitee.FieldIsBridesmaid, invitee.FieldIsGroomsman, invitee.FieldRsvpResponse:
 			values[i] = &sql.NullBool{}
 		case invitee.FieldID:
 			values[i] = &sql.NullInt64{}
@@ -123,6 +127,18 @@ func (i *Invitee) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field has_plus_one", values[j])
 			} else if value.Valid {
 				i.HasPlusOne = value.Bool
+			}
+		case invitee.FieldIsBridesmaid:
+			if value, ok := values[j].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_bridesmaid", values[j])
+			} else if value.Valid {
+				i.IsBridesmaid = value.Bool
+			}
+		case invitee.FieldIsGroomsman:
+			if value, ok := values[j].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_groomsman", values[j])
+			} else if value.Valid {
+				i.IsGroomsman = value.Bool
 			}
 		case invitee.FieldPlusOneName:
 			if value, ok := values[j].(*sql.NullString); !ok {
@@ -241,6 +257,10 @@ func (i *Invitee) String() string {
 	}
 	builder.WriteString(", has_plus_one=")
 	builder.WriteString(fmt.Sprintf("%v", i.HasPlusOne))
+	builder.WriteString(", is_bridesmaid=")
+	builder.WriteString(fmt.Sprintf("%v", i.IsBridesmaid))
+	builder.WriteString(", is_groomsman=")
+	builder.WriteString(fmt.Sprintf("%v", i.IsGroomsman))
 	if v := i.PlusOneName; v != nil {
 		builder.WriteString(", plus_one_name=")
 		builder.WriteString(*v)

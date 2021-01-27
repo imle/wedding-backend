@@ -51,8 +51,16 @@ func init() {
 	inviteeDescHasPlusOne := inviteeFields[2].Descriptor()
 	// invitee.DefaultHasPlusOne holds the default value on creation for the has_plus_one field.
 	invitee.DefaultHasPlusOne = inviteeDescHasPlusOne.Default.(bool)
+	// inviteeDescIsBridesmaid is the schema descriptor for is_bridesmaid field.
+	inviteeDescIsBridesmaid := inviteeFields[3].Descriptor()
+	// invitee.DefaultIsBridesmaid holds the default value on creation for the is_bridesmaid field.
+	invitee.DefaultIsBridesmaid = inviteeDescIsBridesmaid.Default.(bool)
+	// inviteeDescIsGroomsman is the schema descriptor for is_groomsman field.
+	inviteeDescIsGroomsman := inviteeFields[4].Descriptor()
+	// invitee.DefaultIsGroomsman holds the default value on creation for the is_groomsman field.
+	invitee.DefaultIsGroomsman = inviteeDescIsGroomsman.Default.(bool)
 	// inviteeDescRsvpResponse is the schema descriptor for rsvp_response field.
-	inviteeDescRsvpResponse := inviteeFields[12].Descriptor()
+	inviteeDescRsvpResponse := inviteeFields[14].Descriptor()
 	// invitee.DefaultRsvpResponse holds the default value on creation for the rsvp_response field.
 	invitee.DefaultRsvpResponse = inviteeDescRsvpResponse.Default.(bool)
 	inviteepartyFields := schema.InviteeParty{}.Fields()

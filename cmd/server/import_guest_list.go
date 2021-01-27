@@ -18,12 +18,12 @@ var (
 )
 
 var ImportGuestList = cli.Command{
-	Name: "import-guest-list",
+	Name:      "import-guest-list",
+	ArgsUsage: "[< stdin]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:        "csv",
 			Destination: &csvFile,
-			Value:       "./import.csv",
 		},
 	},
 	Action: func(ctx *cli.Context) error {
@@ -33,17 +33,26 @@ var ImportGuestList = cli.Command{
 		}
 		defer client.Close()
 
-		file, err := os.OpenFile(csvFile, os.O_RDONLY, 0666)
+		var reader io.ReadCloser
+		if csvFile != "" {
+			reader, err = os.OpenFile(csvFile, os.O_RDONLY, 0666)
+			if err != nil {
+				return err
+			}
+		} else {
+			reader = os.Stdin
+		}
+
+		defer reader.Close()
+		csvReader := csv.NewReader(reader)
+
+		row, err := csvReader.Read()
 		if err != nil {
 			return err
 		}
 
-		reader := csv.NewReader(file)
-
-		_, err = reader.Read()
-		if err != nil {
-			return err
-		}
+		log.Println(row)
+		log.Exit(0)
 
 		var invitees []*ent.Invitee
 		var parties = map[string]*ent.InviteeParty{}
@@ -58,7 +67,7 @@ var ImportGuestList = cli.Command{
 		}()
 
 		for {
-			read, err := reader.Read()
+			read, err := csvReader.Read()
 			if err != nil {
 				if err == io.EOF {
 					break
@@ -96,13 +105,13 @@ var ImportGuestList = cli.Command{
 				}
 			}
 
-			//if isBridalParty := strings.ToLower(read[4]) == "true"; isBridalParty {
-			//	query.SetIsBridalParty(isBridalParty)
-			//}
-			//
-			//if isGroomsman := strings.ToLower(read[5]) == "true"; isGroomsman {
-			//	query.SetIsGroomsman(isGroomsman)
-			//}
+			if isBridalParty := strings.ToLower(read[4]) == "true"; isBridalParty {
+				query.SetIsBridesmaid(isBridalParty)
+			}
+
+			if isGroomsman := strings.ToLower(read[5]) == "true"; isGroomsman {
+				query.SetIsGroomsman(isGroomsman)
+			}
 
 			if isChild := strings.ToLower(read[6]) == "true"; isChild {
 				query.SetIsChild(isChild)

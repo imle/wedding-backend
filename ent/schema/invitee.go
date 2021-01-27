@@ -21,6 +21,10 @@ func (Invitee) Fields() []ent.Field {
 			Optional().Nillable(),
 		field.Bool("has_plus_one").
 			Default(false),
+		field.Bool("is_bridesmaid").
+			Default(false),
+		field.Bool("is_groomsman").
+			Default(false),
 		field.String("plus_one_name").
 			Optional().Nillable(),
 		field.String("phone").
