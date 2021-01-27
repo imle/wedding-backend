@@ -1,14 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
-	"strings"
 	"syscall"
 	"time"
 
@@ -19,8 +16,6 @@ import (
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
-	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/crypto/ssh/terminal"
 
 	"wedding/ent"
 	"wedding/pkg/server"
@@ -37,7 +32,8 @@ var (
 )
 
 var (
-	redisUrl string
+	redisUrl  string
+	devOrigin string
 )
 
 func main() {
@@ -91,54 +87,16 @@ func main() {
 				EnvVars:     []string{"REDIS_URL"},
 				Value:       "localhost:6379",
 			},
+			&cli.StringFlag{
+				Name:        "development-origin",
+				Destination: &devOrigin,
+				EnvVars:     []string{"DEV_ORIGIN"},
+				Value:       "http://localhost:3000",
+			},
 		},
 		Commands: []*cli.Command{
-			{
-				Name: "add-backroom-user",
-				Action: func(ctx *cli.Context) error {
-					reader := bufio.NewReader(os.Stdin)
-
-					fmt.Print("Enter Username: ")
-					username, err := reader.ReadString('\n')
-					if err != nil {
-						return err
-					}
-
-					fmt.Print("Enter Password: ")
-					bytePassword, err := terminal.ReadPassword(syscall.Stdin)
-					if err != nil {
-						return err
-					}
-					fmt.Println()
-
-					username = strings.TrimSpace(username)
-					password := strings.TrimSpace(string(bytePassword))
-
-					hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
-					if err != nil {
-						return err
-					}
-
-					// Connect to db.
-					client, err := ent.Open("postgres", getPgConnectionString(), ent.Log(log.Println))
-					if err != nil {
-						return err
-					}
-					defer client.Close()
-
-					save, err := client.BackroomUser.Create().
-						SetUsername(username).
-						SetPassword(string(hash)).
-						Save(ctx.Context)
-					if err != nil {
-						return err
-					}
-
-					log.Printf("user created: (%s)\n", save.String())
-
-					return nil
-				},
-			},
+			&AddBackroomUser,
+			&ImportGuestList,
 		},
 		Action: func(ctx *cli.Context) error {
 			// Connect to db.
@@ -185,7 +143,7 @@ func main() {
 			if gin.Mode() != gin.ReleaseMode {
 				config := cors.DefaultConfig()
 				config.AllowCredentials = true
-				config.AllowOrigins = append(config.AllowOrigins, "http://localhost:3000")
+				config.AllowOrigins = append(config.AllowOrigins, devOrigin)
 				engine.Use(cors.New(config))
 			}
 
