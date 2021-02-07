@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	log "github.com/sirupsen/logrus"
 
 	"wedding/ent"
 	"wedding/ent/invitee"
@@ -23,6 +25,7 @@ func RegisterAPIv1(database *ent.Client, g *gin.RouterGroup) *APIv1 {
 
 	g.GET("", api.queryByInviteeForParty)
 	g.GET("/:code", api.getInviteeByCode)
+	g.POST("", api.updateInviteeInfos)
 
 	return api
 }
@@ -67,4 +70,53 @@ func (api *APIv1) getInviteeByCode(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"party": result,
 	})
+}
+
+func (api *APIv1) updateInviteeInfos(c *gin.Context) {
+	var invitees []*ent.Invitee
+
+	err := c.ShouldBindBodyWith(&invitees, binding.JSON)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	tx, err := api.database.Tx(c)
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		log.Error(err)
+		return
+	}
+
+	for _, e := range invitees {
+		if e.ID != 0 {
+			_, err = tx.Invitee.Update().
+				Where(invitee.ID(e.ID)).
+				SetNillablePlusOneName(e.PlusOneName).
+				SetNillablePhone(e.Phone).
+				SetNillableEmail(e.Email).
+				SetNillableAddressLine1(e.AddressLine1).
+				SetNillableAddressLine2(e.AddressLine2).
+				SetNillableAddressCity(e.AddressCity).
+				SetNillableAddressState(e.AddressState).
+				SetNillableAddressPostalCode(e.AddressPostalCode).
+				SetNillableAddressCountry(e.AddressCountry).
+				SetRsvpResponse(e.RsvpResponse).
+				Save(c)
+			if err != nil {
+				c.Status(http.StatusInternalServerError)
+				log.Error(err)
+				return
+			}
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		log.Error(err)
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
