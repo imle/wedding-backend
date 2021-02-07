@@ -97,6 +97,7 @@ func main() {
 		Commands: []*cli.Command{
 			&AddBackroomUser,
 			&ImportGuestList,
+			&GenerateMigrations,
 		},
 		Action: func(ctx *cli.Context) error {
 			if gin.Mode() == gin.ReleaseMode {
@@ -109,11 +110,6 @@ func main() {
 				return err
 			}
 			defer client.Close()
-
-			// TODO: Remove auto migrate.
-			if err := client.Schema.Create(ctx.Context); err != nil {
-				log.Fatalf("failed creating schema resources: %v", err)
-			}
 
 			// Gen some fake data if asked for.
 			if ctx.Bool("generate") {
