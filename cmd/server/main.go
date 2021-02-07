@@ -33,7 +33,7 @@ var (
 
 var (
 	redisUrl  string
-	devOrigin string
+	devOrigin cli.StringSlice
 )
 
 func main() {
@@ -87,11 +87,11 @@ func main() {
 				EnvVars:     []string{"REDIS_URL"},
 				Value:       "localhost:6379",
 			},
-			&cli.StringFlag{
+			&cli.StringSliceFlag{
 				Name:        "development-origin",
 				Destination: &devOrigin,
 				EnvVars:     []string{"DEV_ORIGIN"},
-				Value:       "http://localhost:3000",
+				Value:       cli.NewStringSlice("http://localhost:3000"),
 			},
 		},
 		Commands: []*cli.Command{
@@ -143,7 +143,7 @@ func main() {
 			if gin.Mode() != gin.ReleaseMode {
 				config := cors.DefaultConfig()
 				config.AllowCredentials = true
-				config.AllowOrigins = append(config.AllowOrigins, devOrigin)
+				config.AllowOrigins = append(config.AllowOrigins, devOrigin.Value()...)
 				engine.Use(cors.New(config))
 			}
 
