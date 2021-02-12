@@ -14,18 +14,16 @@ import (
 
 type APIv1 struct {
 	database *ent.Client
-	router   *gin.RouterGroup
 }
 
-func RegisterAPIv1(database *ent.Client, g *gin.RouterGroup) *APIv1 {
+func RegisterAPIv1(database *ent.Client, singular *gin.RouterGroup, plural *gin.RouterGroup) *APIv1 {
 	api := &APIv1{
 		database: database,
-		router:   g,
 	}
 
-	g.GET("", api.queryByInviteeForParty)
-	g.GET("/:code", api.getInviteeByCode)
-	g.POST("", api.updateInviteeInfos)
+	singular.GET("/:code", api.getInviteeByCode)
+	plural.GET("", api.queryByInviteeForParty)
+	plural.POST("", api.updateInviteeInfos)
 
 	return api
 }

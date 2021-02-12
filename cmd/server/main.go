@@ -151,7 +151,7 @@ func main() {
 			router := engine.Group("/api")
 			auth := server.RegisterAuth(client, router, store)
 			server.RegisterAdminAPIv1(client, router.Group("/admin/v1/", auth.Middleware()))
-			server.RegisterAPIv1(client, router.Group("/v1/invitees"))
+			server.RegisterAPIv1(client, router.Group("/v1/invitee"), router.Group("/v1/invitees"))
 
 			// Create server.
 			srv := &http.Server{
