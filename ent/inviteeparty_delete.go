@@ -8,9 +8,9 @@ import (
 	"wedding/ent/inviteeparty"
 	"wedding/ent/predicate"
 
-	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 )
 
 // InviteePartyDelete is the builder for deleting a InviteeParty entity.

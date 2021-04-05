@@ -7,7 +7,7 @@ import (
 	"strings"
 	"wedding/ent/inviteeparty"
 
-	"github.com/facebook/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql"
 )
 
 // InviteeParty is the model entity for the InviteeParty schema.
@@ -27,7 +27,7 @@ type InviteeParty struct {
 // InviteePartyEdges holds the relations/edges for other nodes in the graph.
 type InviteePartyEdges struct {
 	// Invitees holds the value of the invitees edge.
-	Invitees []*Invitee
+	Invitees []*Invitee `json:"invitees,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool

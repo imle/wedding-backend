@@ -3,32 +3,19 @@
 package migrate
 
 import (
-	"github.com/facebook/ent/dialect/sql/schema"
-	"github.com/facebook/ent/schema/field"
+	"entgo.io/ent/dialect/sql/schema"
+	"entgo.io/ent/schema/field"
 )
 
 var (
-	// BackroomUsersColumns holds the columns for the "backroom_users" table.
-	BackroomUsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "username", Type: field.TypeString, Unique: true, Size: 20},
-		{Name: "password", Type: field.TypeString, Size: 64},
-	}
-	// BackroomUsersTable holds the schema information for the "backroom_users" table.
-	BackroomUsersTable = &schema.Table{
-		Name:        "backroom_users",
-		Columns:     BackroomUsersColumns,
-		PrimaryKey:  []*schema.Column{BackroomUsersColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{},
-	}
 	// InviteesColumns holds the columns for the "invitees" table.
 	InviteesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
-		{Name: "is_child", Type: field.TypeBool, Nullable: true},
-		{Name: "has_plus_one", Type: field.TypeBool},
-		{Name: "is_bridesmaid", Type: field.TypeBool},
-		{Name: "is_groomsman", Type: field.TypeBool},
+		{Name: "is_child", Type: field.TypeBool, Nullable: true, Default: false},
+		{Name: "has_plus_one", Type: field.TypeBool, Default: false},
+		{Name: "is_bridesmaid", Type: field.TypeBool, Default: false},
+		{Name: "is_groomsman", Type: field.TypeBool, Default: false},
 		{Name: "plus_one_name", Type: field.TypeString, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "email", Type: field.TypeString, Nullable: true},
@@ -38,7 +25,7 @@ var (
 		{Name: "address_state", Type: field.TypeString, Nullable: true},
 		{Name: "address_postal_code", Type: field.TypeString, Nullable: true},
 		{Name: "address_country", Type: field.TypeString, Nullable: true},
-		{Name: "rsvp_response", Type: field.TypeBool},
+		{Name: "rsvp_response", Type: field.TypeBool, Nullable: true},
 		{Name: "invitee_party_invitees", Type: field.TypeInt, Nullable: true},
 	}
 	// InviteesTable holds the schema information for the "invitees" table.
@@ -48,9 +35,8 @@ var (
 		PrimaryKey: []*schema.Column{InviteesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:  "invitees_invitee_parties_invitees",
-				Columns: []*schema.Column{InviteesColumns[16]},
-
+				Symbol:     "invitees_invitee_parties_invitees",
+				Columns:    []*schema.Column{InviteesColumns[16]},
 				RefColumns: []*schema.Column{InviteePartiesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -71,7 +57,6 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		BackroomUsersTable,
 		InviteesTable,
 		InviteePartiesTable,
 	}

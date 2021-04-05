@@ -11,10 +11,8 @@ const (
 	FieldName = "name"
 	// FieldCode holds the string denoting the code field in the database.
 	FieldCode = "code"
-
 	// EdgeInvitees holds the string denoting the invitees edge name in mutations.
 	EdgeInvitees = "invitees"
-
 	// Table holds the table name of the inviteeparty in the database.
 	Table = "invitee_parties"
 	// InviteesTable is the table the holds the invitees relation/edge.

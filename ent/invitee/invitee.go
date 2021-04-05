@@ -37,10 +37,8 @@ const (
 	FieldAddressCountry = "address_country"
 	// FieldRsvpResponse holds the string denoting the rsvp_response field in the database.
 	FieldRsvpResponse = "rsvp_response"
-
 	// EdgeParty holds the string denoting the party edge name in mutations.
 	EdgeParty = "party"
-
 	// Table holds the table name of the invitee in the database.
 	Table = "invitees"
 	// PartyTable is the table the holds the party relation/edge.
@@ -72,7 +70,8 @@ var Columns = []string{
 	FieldRsvpResponse,
 }
 
-// ForeignKeys holds the SQL foreign-keys that are owned by the Invitee type.
+// ForeignKeys holds the SQL foreign-keys that are owned by the "invitees"
+// table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"invitee_party_invitees",
 }
@@ -103,6 +102,4 @@ var (
 	DefaultIsBridesmaid bool
 	// DefaultIsGroomsman holds the default value on creation for the "is_groomsman" field.
 	DefaultIsGroomsman bool
-	// DefaultRsvpResponse holds the default value on creation for the "rsvp_response" field.
-	DefaultRsvpResponse bool
 )

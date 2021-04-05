@@ -11,9 +11,9 @@ import (
 	"wedding/ent/inviteeparty"
 	"wedding/ent/predicate"
 
-	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 )
 
 // InviteeQuery is the builder for querying Invitee entities.
@@ -63,7 +63,7 @@ func (iq *InviteeQuery) QueryParty() *InviteePartyQuery {
 		if err := iq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := iq.sqlQuery()
+		selector := iq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -299,7 +299,7 @@ func (iq *InviteeQuery) GroupBy(field string, fields ...string) *InviteeGroupBy 
 		if err := iq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		return iq.sqlQuery(), nil
+		return iq.sqlQuery(ctx), nil
 	}
 	return group
 }
@@ -377,7 +377,8 @@ func (iq *InviteeQuery) sqlAll(ctx context.Context) ([]*Invitee, error) {
 		ids := make([]int, 0, len(nodes))
 		nodeids := make(map[int][]*Invitee)
 		for i := range nodes {
-			if fk := nodes[i].invitee_party_invitees; fk != nil {
+			fk := nodes[i].invitee_party_invitees
+			if fk != nil {
 				ids = append(ids, *fk)
 				nodeids[*fk] = append(nodeids[*fk], nodes[i])
 			}
@@ -409,7 +410,7 @@ func (iq *InviteeQuery) sqlCount(ctx context.Context) (int, error) {
 func (iq *InviteeQuery) sqlExist(ctx context.Context) (bool, error) {
 	n, err := iq.sqlCount(ctx)
 	if err != nil {
-		return false, fmt.Errorf("ent: check existence: %v", err)
+		return false, fmt.Errorf("ent: check existence: %w", err)
 	}
 	return n > 0, nil
 }
@@ -459,7 +460,7 @@ func (iq *InviteeQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (iq *InviteeQuery) sqlQuery() *sql.Selector {
+func (iq *InviteeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(iq.driver.Dialect())
 	t1 := builder.Table(invitee.Table)
 	selector := builder.Select(t1.Columns(invitee.Columns...)...).From(t1)
@@ -754,7 +755,7 @@ func (is *InviteeSelect) Scan(ctx context.Context, v interface{}) error {
 	if err := is.prepareQuery(ctx); err != nil {
 		return err
 	}
-	is.sql = is.InviteeQuery.sqlQuery()
+	is.sql = is.InviteeQuery.sqlQuery(ctx)
 	return is.sqlScan(ctx, v)
 }
 

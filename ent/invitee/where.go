@@ -5,8 +5,8 @@ package invitee
 import (
 	"wedding/ent/predicate"
 
-	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -1514,6 +1514,20 @@ func RsvpResponseEQ(v bool) predicate.Invitee {
 func RsvpResponseNEQ(v bool) predicate.Invitee {
 	return predicate.Invitee(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldRsvpResponse), v))
+	})
+}
+
+// RsvpResponseIsNil applies the IsNil predicate on the "rsvp_response" field.
+func RsvpResponseIsNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRsvpResponse)))
+	})
+}
+
+// RsvpResponseNotNil applies the NotNil predicate on the "rsvp_response" field.
+func RsvpResponseNotNil() predicate.Invitee {
+	return predicate.Invitee(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRsvpResponse)))
 	})
 }
 

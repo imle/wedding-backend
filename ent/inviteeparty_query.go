@@ -12,9 +12,9 @@ import (
 	"wedding/ent/inviteeparty"
 	"wedding/ent/predicate"
 
-	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 )
 
 // InviteePartyQuery is the builder for querying InviteeParty entities.
@@ -63,7 +63,7 @@ func (ipq *InviteePartyQuery) QueryInvitees() *InviteeQuery {
 		if err := ipq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := ipq.sqlQuery()
+		selector := ipq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -299,7 +299,7 @@ func (ipq *InviteePartyQuery) GroupBy(field string, fields ...string) *InviteePa
 		if err := ipq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		return ipq.sqlQuery(), nil
+		return ipq.sqlQuery(ctx), nil
 	}
 	return group
 }
@@ -406,7 +406,7 @@ func (ipq *InviteePartyQuery) sqlCount(ctx context.Context) (int, error) {
 func (ipq *InviteePartyQuery) sqlExist(ctx context.Context) (bool, error) {
 	n, err := ipq.sqlCount(ctx)
 	if err != nil {
-		return false, fmt.Errorf("ent: check existence: %v", err)
+		return false, fmt.Errorf("ent: check existence: %w", err)
 	}
 	return n > 0, nil
 }
@@ -456,7 +456,7 @@ func (ipq *InviteePartyQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (ipq *InviteePartyQuery) sqlQuery() *sql.Selector {
+func (ipq *InviteePartyQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(ipq.driver.Dialect())
 	t1 := builder.Table(inviteeparty.Table)
 	selector := builder.Select(t1.Columns(inviteeparty.Columns...)...).From(t1)
@@ -751,7 +751,7 @@ func (ips *InviteePartySelect) Scan(ctx context.Context, v interface{}) error {
 	if err := ips.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ips.sql = ips.InviteePartyQuery.sqlQuery()
+	ips.sql = ips.InviteePartyQuery.sqlQuery(ctx)
 	return ips.sqlScan(ctx, v)
 }
 

@@ -99,7 +99,7 @@ func (api *APIv1) updateInviteeInfos(c *gin.Context) {
 				SetNillableAddressState(e.AddressState).
 				SetNillableAddressPostalCode(e.AddressPostalCode).
 				SetNillableAddressCountry(e.AddressCountry).
-				SetRsvpResponse(e.RsvpResponse).
+				SetNillableRsvpResponse(e.RsvpResponse).
 				Save(c)
 			if err != nil {
 				c.Status(http.StatusInternalServerError)

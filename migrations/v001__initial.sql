@@ -43,7 +43,7 @@ create table invitees
     address_state varchar,
     address_postal_code varchar,
     address_country varchar,
-    rsvp_response boolean not null,
+    rsvp_response boolean,
     invitee_party_invitees bigint
         constraint invitees_invitee_parties_invitees
         references invitee_parties

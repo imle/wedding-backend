@@ -9,9 +9,9 @@ import (
 	"wedding/ent/inviteeparty"
 	"wedding/ent/predicate"
 
-	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 )
 
 // InviteeUpdate is the builder for updating Invitee entities.
@@ -286,6 +286,12 @@ func (iu *InviteeUpdate) SetNillableRsvpResponse(b *bool) *InviteeUpdate {
 	if b != nil {
 		iu.SetRsvpResponse(*b)
 	}
+	return iu
+}
+
+// ClearRsvpResponse clears the value of the "rsvp_response" field.
+func (iu *InviteeUpdate) ClearRsvpResponse() *InviteeUpdate {
+	iu.mutation.ClearRsvpResponse()
 	return iu
 }
 
@@ -566,6 +572,12 @@ func (iu *InviteeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
+			Column: invitee.FieldRsvpResponse,
+		})
+	}
+	if iu.mutation.RsvpResponseCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
 			Column: invitee.FieldRsvpResponse,
 		})
 	}
@@ -884,6 +896,12 @@ func (iuo *InviteeUpdateOne) SetNillableRsvpResponse(b *bool) *InviteeUpdateOne 
 	return iuo
 }
 
+// ClearRsvpResponse clears the value of the "rsvp_response" field.
+func (iuo *InviteeUpdateOne) ClearRsvpResponse() *InviteeUpdateOne {
+	iuo.mutation.ClearRsvpResponse()
+	return iuo
+}
+
 // SetPartyID sets the "party" edge to the InviteeParty entity by ID.
 func (iuo *InviteeUpdateOne) SetPartyID(id int) *InviteeUpdateOne {
 	iuo.mutation.SetPartyID(id)
@@ -997,6 +1015,13 @@ func (iuo *InviteeUpdateOne) sqlSave(ctx context.Context) (_node *Invitee, err e
 		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Invitee.ID for update")}
 	}
 	_spec.Node.ID.Value = id
+	if ps := iuo.mutation.predicates; len(ps) > 0 {
+		_spec.Predicate = func(selector *sql.Selector) {
+			for i := range ps {
+				ps[i](selector)
+			}
+		}
+	}
 	if value, ok := iuo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -1159,6 +1184,12 @@ func (iuo *InviteeUpdateOne) sqlSave(ctx context.Context) (_node *Invitee, err e
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
+			Column: invitee.FieldRsvpResponse,
+		})
+	}
+	if iuo.mutation.RsvpResponseCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
 			Column: invitee.FieldRsvpResponse,
 		})
 	}

@@ -3,11 +3,8 @@
 package predicate
 
 import (
-	"github.com/facebook/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql"
 )
-
-// BackroomUser is the predicate function for backroomuser builders.
-type BackroomUser func(*sql.Selector)
 
 // Invitee is the predicate function for invitee builders.
 type Invitee func(*sql.Selector)

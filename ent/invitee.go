@@ -8,7 +8,7 @@ import (
 	"wedding/ent/invitee"
 	"wedding/ent/inviteeparty"
 
-	"github.com/facebook/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql"
 )
 
 // Invitee is the model entity for the Invitee schema.
@@ -45,7 +45,7 @@ type Invitee struct {
 	// AddressCountry holds the value of the "address_country" field.
 	AddressCountry *string `json:"address_country,omitempty"`
 	// RsvpResponse holds the value of the "rsvp_response" field.
-	RsvpResponse bool `json:"rsvp_response,omitempty"`
+	RsvpResponse *bool `json:"rsvp_response,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the InviteeQuery when eager-loading is set.
 	Edges                  InviteeEdges `json:"edges"`
@@ -55,7 +55,7 @@ type Invitee struct {
 // InviteeEdges holds the relations/edges for other nodes in the graph.
 type InviteeEdges struct {
 	// Party holds the value of the party edge.
-	Party *InviteeParty
+	Party *InviteeParty `json:"party,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
@@ -207,7 +207,8 @@ func (i *Invitee) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[j].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field rsvp_response", values[j])
 			} else if value.Valid {
-				i.RsvpResponse = value.Bool
+				i.RsvpResponse = new(bool)
+				*i.RsvpResponse = value.Bool
 			}
 		case invitee.ForeignKeys[0]:
 			if value, ok := values[j].(*sql.NullInt64); !ok {
@@ -297,8 +298,10 @@ func (i *Invitee) String() string {
 		builder.WriteString(", address_country=")
 		builder.WriteString(*v)
 	}
-	builder.WriteString(", rsvp_response=")
-	builder.WriteString(fmt.Sprintf("%v", i.RsvpResponse))
+	if v := i.RsvpResponse; v != nil {
+		builder.WriteString(", rsvp_response=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

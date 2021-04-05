@@ -9,8 +9,8 @@ import (
 	"wedding/ent/invitee"
 	"wedding/ent/inviteeparty"
 
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 )
 
 // InviteeCreate is the builder for creating a Invitee entity.
@@ -309,10 +309,6 @@ func (ic *InviteeCreate) defaults() {
 		v := invitee.DefaultIsGroomsman
 		ic.mutation.SetIsGroomsman(v)
 	}
-	if _, ok := ic.mutation.RsvpResponse(); !ok {
-		v := invitee.DefaultRsvpResponse
-		ic.mutation.SetRsvpResponse(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -333,9 +329,6 @@ func (ic *InviteeCreate) check() error {
 	}
 	if _, ok := ic.mutation.IsGroomsman(); !ok {
 		return &ValidationError{Name: "is_groomsman", err: errors.New("ent: missing required field \"is_groomsman\"")}
-	}
-	if _, ok := ic.mutation.RsvpResponse(); !ok {
-		return &ValidationError{Name: "rsvp_response", err: errors.New("ent: missing required field \"rsvp_response\"")}
 	}
 	return nil
 }
@@ -482,7 +475,7 @@ func (ic *InviteeCreate) createSpec() (*Invitee, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: invitee.FieldRsvpResponse,
 		})
-		_node.RsvpResponse = value
+		_node.RsvpResponse = &value
 	}
 	if nodes := ic.mutation.PartyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -501,6 +494,7 @@ func (ic *InviteeCreate) createSpec() (*Invitee, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.invitee_party_invitees = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

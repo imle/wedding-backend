@@ -95,7 +95,6 @@ func main() {
 			},
 		},
 		Commands: []*cli.Command{
-			&AddBackroomUser,
 			&ImportGuestList,
 			&GenerateMigrations,
 		},
@@ -149,8 +148,6 @@ func main() {
 
 			// Register data handlers.
 			router := engine.Group("/api")
-			auth := server.RegisterAuth(client, router, store)
-			server.RegisterAdminAPIv1(client, router.Group("/admin/v1/", auth.Middleware()))
 			server.RegisterAPIv1(client, router.Group("/v1/invitee"), router.Group("/v1/invitees"))
 
 			// Create server.

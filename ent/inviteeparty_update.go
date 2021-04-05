@@ -9,9 +9,9 @@ import (
 	"wedding/ent/inviteeparty"
 	"wedding/ent/predicate"
 
-	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 )
 
 // InviteePartyUpdate is the builder for updating InviteeParty entities.
@@ -397,6 +397,13 @@ func (ipuo *InviteePartyUpdateOne) sqlSave(ctx context.Context) (_node *InviteeP
 		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing InviteeParty.ID for update")}
 	}
 	_spec.Node.ID.Value = id
+	if ps := ipuo.mutation.predicates; len(ps) > 0 {
+		_spec.Predicate = func(selector *sql.Selector) {
+			for i := range ps {
+				ps[i](selector)
+			}
+		}
+	}
 	if value, ok := ipuo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,

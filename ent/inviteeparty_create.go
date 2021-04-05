@@ -9,8 +9,8 @@ import (
 	"wedding/ent/invitee"
 	"wedding/ent/inviteeparty"
 
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 )
 
 // InviteePartyCreate is the builder for creating a InviteeParty entity.
