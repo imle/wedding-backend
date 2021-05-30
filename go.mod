@@ -24,4 +24,9 @@ require (
 	go.opentelemetry.io/otel/trace v0.20.0
 )
 
-replace entgo.io/ent v0.8.0 => github.com/imle/ent v0.5.1-0.20210530060012-b10bc4779d2c
+replace (
+	entgo.io/ent v0.8.0 => github.com/imle/ent v0.5.1-0.20210530060012-b10bc4779d2c
+	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff => github.com/imle/redistore v0.0.0-20210321080819-ad59bf62b1dc
+	github.com/gomodule/redigo v1.8.4 => github.com/imle/redigo v1.8.5-0.20210530073842-3aeb31f7a0af
+	github.com/toorop/gin-logrus v0.0.0-20210225092905-2c785434f26f => github.com/imle/gin-logrus v0.0.0-20210402041041-59841976bd0b
+)

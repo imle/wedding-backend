@@ -29,8 +29,8 @@ var (
 	redisDb            int
 	redisSessionSecret string
 
-	otelCollectorInsecure bool
 	otelCollectorEndpoint string
+	otelCollectorInsecure bool
 	otelCollectorPeriod   time.Duration
 )
 
@@ -88,17 +88,17 @@ func main() {
 				EnvVars:     []string{"WEDDING_REDIS_SESSION_SECRET"},
 				Value:       "",
 			},
-			&cli.BoolFlag{
-				Name:        "otel-collector-insecure",
-				Destination: &otelCollectorInsecure,
-				EnvVars:     []string{"WEDDING_OTEL_COLLECTOR_INSECURE"},
-				Value:       false,
-			},
 			&cli.StringFlag{
 				Name:        "otel-collector-endpoint",
 				Destination: &otelCollectorEndpoint,
 				EnvVars:     []string{"WEDDING_OTEL_COLLECTOR_ENDPOINT"},
 				Value:       "localhost:30080",
+			},
+			&cli.BoolFlag{
+				Name:        "otel-collector-insecure",
+				Destination: &otelCollectorInsecure,
+				EnvVars:     []string{"WEDDING_OTEL_COLLECTOR_INSECURE"},
+				Value:       false,
 			},
 			&cli.DurationFlag{
 				Name:        "otel-collector-period",
