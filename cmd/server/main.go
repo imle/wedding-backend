@@ -18,12 +18,7 @@ import (
 )
 
 var (
-	pgHost     string
-	pgPort     int
-	pgUsername string
-	pgDatabase string
-	pgPassword string
-	pgSSLMode  string
+	dbConStr string
 
 	serverAddress string
 	logLevel      string
@@ -70,40 +65,10 @@ func main() {
 				Value:       cli.NewStringSlice("http://localhost:3000"),
 			},
 			&cli.StringFlag{
-				Name:        "pg-host",
-				Destination: &pgHost,
-				EnvVars:     []string{"WEDDING_PG_HOST"},
-				Value:       "localhost",
-			},
-			&cli.IntFlag{
-				Name:        "pg-port",
-				Destination: &pgPort,
-				EnvVars:     []string{"WEDDING_PG_PORT"},
-				Value:       5432,
-			},
-			&cli.StringFlag{
-				Name:        "pg-username",
-				Destination: &pgUsername,
-				EnvVars:     []string{"WEDDING_PG_USERNAME"},
-				Value:       "wedding",
-			},
-			&cli.StringFlag{
-				Name:        "pg-database",
-				Destination: &pgDatabase,
-				EnvVars:     []string{"WEDDING_PG_DATABASE"},
-				Value:       "wedding",
-			},
-			&cli.StringFlag{
-				Name:        "pg-password",
-				Destination: &pgPassword,
-				EnvVars:     []string{"WEDDING_PG_PASSWORD"},
-				Value:       "",
-			},
-			&cli.StringFlag{
-				Name:        "pg-sslmode",
-				Destination: &pgSSLMode,
-				EnvVars:     []string{"WEDDING_PG_SSL_MODE"},
-				Value:       "disable",
+				Name:        "db-connection-string",
+				Destination: &dbConStr,
+				EnvVars:     []string{"WEDDING_DB_CONNECTION_STRING"},
+				Value:       "user=wedding dbname=wedding password=wedding sslmode=disable host=localhost port=5432",
 			},
 			&cli.StringFlag{
 				Name:        "redis-url",
