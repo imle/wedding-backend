@@ -22,7 +22,7 @@ type RSVP struct {
 func NewRSVP(database *ent.Client) *RSVP {
 	return &RSVP{
 		database: database,
-		tracer:   otel.Tracer("paperfree/apiv1"),
+		tracer:   otel.Tracer("wedding/apiv1"),
 	}
 }
 
