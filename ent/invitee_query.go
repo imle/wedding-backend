@@ -4,9 +4,11 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
+	"wedding/ent/eventrsvp"
 	"wedding/ent/invitee"
 	"wedding/ent/inviteeparty"
 	"wedding/ent/predicate"
@@ -21,12 +23,14 @@ type InviteeQuery struct {
 	config
 	limit      *int
 	offset     *int
+	unique     *bool
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.Invitee
 	// eager-loading edges.
-	withParty *InviteePartyQuery
-	withFKs   bool
+	withEvents *EventRSVPQuery
+	withParty  *InviteePartyQuery
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -50,10 +54,39 @@ func (iq *InviteeQuery) Offset(offset int) *InviteeQuery {
 	return iq
 }
 
+// Unique configures the query builder to filter duplicate records on query.
+// By default, unique is set to true, and can be disabled using this method.
+func (iq *InviteeQuery) Unique(unique bool) *InviteeQuery {
+	iq.unique = &unique
+	return iq
+}
+
 // Order adds an order step to the query.
 func (iq *InviteeQuery) Order(o ...OrderFunc) *InviteeQuery {
 	iq.order = append(iq.order, o...)
 	return iq
+}
+
+// QueryEvents chains the current query on the "events" edge.
+func (iq *InviteeQuery) QueryEvents() *EventRSVPQuery {
+	query := &EventRSVPQuery{config: iq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := iq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := iq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(invitee.Table, invitee.FieldID, selector),
+			sqlgraph.To(eventrsvp.Table, eventrsvp.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, invitee.EventsTable, invitee.EventsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryParty chains the current query on the "party" edge.
@@ -259,11 +292,23 @@ func (iq *InviteeQuery) Clone() *InviteeQuery {
 		offset:     iq.offset,
 		order:      append([]OrderFunc{}, iq.order...),
 		predicates: append([]predicate.Invitee{}, iq.predicates...),
+		withEvents: iq.withEvents.Clone(),
 		withParty:  iq.withParty.Clone(),
 		// clone intermediate query.
 		sql:  iq.sql.Clone(),
 		path: iq.path,
 	}
+}
+
+// WithEvents tells the query-builder to eager-load the nodes that are connected to
+// the "events" edge. The optional arguments are used to configure the query builder of the edge.
+func (iq *InviteeQuery) WithEvents(opts ...func(*EventRSVPQuery)) *InviteeQuery {
+	query := &EventRSVPQuery{config: iq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	iq.withEvents = query
+	return iq
 }
 
 // WithParty tells the query-builder to eager-load the nodes that are connected to
@@ -343,7 +388,8 @@ func (iq *InviteeQuery) sqlAll(ctx context.Context) ([]*Invitee, error) {
 		nodes       = []*Invitee{}
 		withFKs     = iq.withFKs
 		_spec       = iq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
+			iq.withEvents != nil,
 			iq.withParty != nil,
 		}
 	)
@@ -373,15 +419,47 @@ func (iq *InviteeQuery) sqlAll(ctx context.Context) ([]*Invitee, error) {
 		return nodes, nil
 	}
 
+	if query := iq.withEvents; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Invitee)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Events = []*EventRSVP{}
+		}
+		query.withFKs = true
+		query.Where(predicate.EventRSVP(func(s *sql.Selector) {
+			s.Where(sql.InValues(invitee.EventsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.invitee_events
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "invitee_events" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "invitee_events" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Events = append(node.Edges.Events, n)
+		}
+	}
+
 	if query := iq.withParty; query != nil {
 		ids := make([]int, 0, len(nodes))
 		nodeids := make(map[int][]*Invitee)
 		for i := range nodes {
-			fk := nodes[i].invitee_party_invitees
-			if fk != nil {
-				ids = append(ids, *fk)
-				nodeids[*fk] = append(nodeids[*fk], nodes[i])
+			if nodes[i].invitee_party_invitees == nil {
+				continue
 			}
+			fk := *nodes[i].invitee_party_invitees
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
 		query.Where(inviteeparty.IDIn(ids...))
 		neighbors, err := query.All(ctx)
@@ -428,6 +506,9 @@ func (iq *InviteeQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   iq.sql,
 		Unique: true,
 	}
+	if unique := iq.unique; unique != nil {
+		_spec.Unique = *unique
+	}
 	if fields := iq.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, invitee.FieldID)
@@ -453,7 +534,7 @@ func (iq *InviteeQuery) querySpec() *sqlgraph.QuerySpec {
 	if ps := iq.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
-				ps[i](selector, invitee.ValidColumn)
+				ps[i](selector)
 			}
 		}
 	}
@@ -472,7 +553,7 @@ func (iq *InviteeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	for _, p := range iq.order {
-		p(selector, invitee.ValidColumn)
+		p(selector)
 	}
 	if offset := iq.offset; offset != nil {
 		// limit is mandatory for offset clause. We start
@@ -734,13 +815,24 @@ func (igb *InviteeGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 }
 
 func (igb *InviteeGroupBy) sqlQuery() *sql.Selector {
-	selector := igb.sql
-	columns := make([]string, 0, len(igb.fields)+len(igb.fns))
-	columns = append(columns, igb.fields...)
+	selector := igb.sql.Select()
+	aggregation := make([]string, 0, len(igb.fns))
 	for _, fn := range igb.fns {
-		columns = append(columns, fn(selector, invitee.ValidColumn))
+		aggregation = append(aggregation, fn(selector))
 	}
-	return selector.Select(columns...).GroupBy(igb.fields...)
+	// If no columns were selected in a custom aggregation function, the default
+	// selection is the fields used for "group-by", and the aggregation functions.
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(igb.fields)+len(igb.fns))
+		for _, f := range igb.fields {
+			columns = append(columns, selector.C(f))
+		}
+		for _, c := range aggregation {
+			columns = append(columns, c)
+		}
+		selector.Select(columns...)
+	}
+	return selector.GroupBy(selector.Columns(igb.fields...)...)
 }
 
 // InviteeSelect is the builder for selecting fields of Invitee entities.

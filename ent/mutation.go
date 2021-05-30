@@ -6,6 +6,8 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"wedding/ent/event"
+	"wedding/ent/eventrsvp"
 	"wedding/ent/invitee"
 	"wedding/ent/inviteeparty"
 	"wedding/ent/predicate"
@@ -22,9 +24,743 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeEvent        = "Event"
+	TypeEventRSVP    = "EventRSVP"
 	TypeInvitee      = "Invitee"
 	TypeInviteeParty = "InviteeParty"
 )
+
+// EventMutation represents an operation that mutates the Event nodes in the graph.
+type EventMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	name          *string
+	clearedFields map[string]struct{}
+	rsvps         map[int]struct{}
+	removedrsvps  map[int]struct{}
+	clearedrsvps  bool
+	done          bool
+	oldValue      func(context.Context) (*Event, error)
+	predicates    []predicate.Event
+}
+
+var _ ent.Mutation = (*EventMutation)(nil)
+
+// eventOption allows management of the mutation configuration using functional options.
+type eventOption func(*EventMutation)
+
+// newEventMutation creates new mutation for the Event entity.
+func newEventMutation(c config, op Op, opts ...eventOption) *EventMutation {
+	m := &EventMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeEvent,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withEventID sets the ID field of the mutation.
+func withEventID(id int) eventOption {
+	return func(m *EventMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Event
+		)
+		m.oldValue = func(ctx context.Context) (*Event, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Event.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withEvent sets the old Event of the mutation.
+func withEvent(node *Event) eventOption {
+	return func(m *EventMutation) {
+		m.oldValue = func(context.Context) (*Event, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m EventMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m EventMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID
+// is only available if it was provided to the builder.
+func (m *EventMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetName sets the "name" field.
+func (m *EventMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *EventMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *EventMutation) ResetName() {
+	m.name = nil
+}
+
+// AddRsvpIDs adds the "rsvps" edge to the EventRSVP entity by ids.
+func (m *EventMutation) AddRsvpIDs(ids ...int) {
+	if m.rsvps == nil {
+		m.rsvps = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.rsvps[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRsvps clears the "rsvps" edge to the EventRSVP entity.
+func (m *EventMutation) ClearRsvps() {
+	m.clearedrsvps = true
+}
+
+// RsvpsCleared reports if the "rsvps" edge to the EventRSVP entity was cleared.
+func (m *EventMutation) RsvpsCleared() bool {
+	return m.clearedrsvps
+}
+
+// RemoveRsvpIDs removes the "rsvps" edge to the EventRSVP entity by IDs.
+func (m *EventMutation) RemoveRsvpIDs(ids ...int) {
+	if m.removedrsvps == nil {
+		m.removedrsvps = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.removedrsvps[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRsvps returns the removed IDs of the "rsvps" edge to the EventRSVP entity.
+func (m *EventMutation) RemovedRsvpsIDs() (ids []int) {
+	for id := range m.removedrsvps {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RsvpsIDs returns the "rsvps" edge IDs in the mutation.
+func (m *EventMutation) RsvpsIDs() (ids []int) {
+	for id := range m.rsvps {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRsvps resets all changes to the "rsvps" edge.
+func (m *EventMutation) ResetRsvps() {
+	m.rsvps = nil
+	m.clearedrsvps = false
+	m.removedrsvps = nil
+}
+
+// Op returns the operation name.
+func (m *EventMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Event).
+func (m *EventMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *EventMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.name != nil {
+		fields = append(fields, event.FieldName)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *EventMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case event.FieldName:
+		return m.Name()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case event.FieldName:
+		return m.OldName(ctx)
+	}
+	return nil, fmt.Errorf("unknown Event field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EventMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case event.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Event field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *EventMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EventMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Event numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *EventMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *EventMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *EventMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Event nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *EventMutation) ResetField(name string) error {
+	switch name {
+	case event.FieldName:
+		m.ResetName()
+		return nil
+	}
+	return fmt.Errorf("unknown Event field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *EventMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.rsvps != nil {
+		edges = append(edges, event.EdgeRsvps)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *EventMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case event.EdgeRsvps:
+		ids := make([]ent.Value, 0, len(m.rsvps))
+		for id := range m.rsvps {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *EventMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedrsvps != nil {
+		edges = append(edges, event.EdgeRsvps)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *EventMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case event.EdgeRsvps:
+		ids := make([]ent.Value, 0, len(m.removedrsvps))
+		for id := range m.removedrsvps {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *EventMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedrsvps {
+		edges = append(edges, event.EdgeRsvps)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *EventMutation) EdgeCleared(name string) bool {
+	switch name {
+	case event.EdgeRsvps:
+		return m.clearedrsvps
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *EventMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Event unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *EventMutation) ResetEdge(name string) error {
+	switch name {
+	case event.EdgeRsvps:
+		m.ResetRsvps()
+		return nil
+	}
+	return fmt.Errorf("unknown Event edge %s", name)
+}
+
+// EventRSVPMutation represents an operation that mutates the EventRSVP nodes in the graph.
+type EventRSVPMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *int
+	clearedFields  map[string]struct{}
+	event          *int
+	clearedevent   bool
+	invitee        *int
+	clearedinvitee bool
+	done           bool
+	oldValue       func(context.Context) (*EventRSVP, error)
+	predicates     []predicate.EventRSVP
+}
+
+var _ ent.Mutation = (*EventRSVPMutation)(nil)
+
+// eventrsvpOption allows management of the mutation configuration using functional options.
+type eventrsvpOption func(*EventRSVPMutation)
+
+// newEventRSVPMutation creates new mutation for the EventRSVP entity.
+func newEventRSVPMutation(c config, op Op, opts ...eventrsvpOption) *EventRSVPMutation {
+	m := &EventRSVPMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeEventRSVP,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withEventRSVPID sets the ID field of the mutation.
+func withEventRSVPID(id int) eventrsvpOption {
+	return func(m *EventRSVPMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *EventRSVP
+		)
+		m.oldValue = func(ctx context.Context) (*EventRSVP, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().EventRSVP.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withEventRSVP sets the old EventRSVP of the mutation.
+func withEventRSVP(node *EventRSVP) eventrsvpOption {
+	return func(m *EventRSVPMutation) {
+		m.oldValue = func(context.Context) (*EventRSVP, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m EventRSVPMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m EventRSVPMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID
+// is only available if it was provided to the builder.
+func (m *EventRSVPMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetEventID sets the "event" edge to the Event entity by id.
+func (m *EventRSVPMutation) SetEventID(id int) {
+	m.event = &id
+}
+
+// ClearEvent clears the "event" edge to the Event entity.
+func (m *EventRSVPMutation) ClearEvent() {
+	m.clearedevent = true
+}
+
+// EventCleared reports if the "event" edge to the Event entity was cleared.
+func (m *EventRSVPMutation) EventCleared() bool {
+	return m.clearedevent
+}
+
+// EventID returns the "event" edge ID in the mutation.
+func (m *EventRSVPMutation) EventID() (id int, exists bool) {
+	if m.event != nil {
+		return *m.event, true
+	}
+	return
+}
+
+// EventIDs returns the "event" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EventID instead. It exists only for internal usage by the builders.
+func (m *EventRSVPMutation) EventIDs() (ids []int) {
+	if id := m.event; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEvent resets all changes to the "event" edge.
+func (m *EventRSVPMutation) ResetEvent() {
+	m.event = nil
+	m.clearedevent = false
+}
+
+// SetInviteeID sets the "invitee" edge to the Invitee entity by id.
+func (m *EventRSVPMutation) SetInviteeID(id int) {
+	m.invitee = &id
+}
+
+// ClearInvitee clears the "invitee" edge to the Invitee entity.
+func (m *EventRSVPMutation) ClearInvitee() {
+	m.clearedinvitee = true
+}
+
+// InviteeCleared reports if the "invitee" edge to the Invitee entity was cleared.
+func (m *EventRSVPMutation) InviteeCleared() bool {
+	return m.clearedinvitee
+}
+
+// InviteeID returns the "invitee" edge ID in the mutation.
+func (m *EventRSVPMutation) InviteeID() (id int, exists bool) {
+	if m.invitee != nil {
+		return *m.invitee, true
+	}
+	return
+}
+
+// InviteeIDs returns the "invitee" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// InviteeID instead. It exists only for internal usage by the builders.
+func (m *EventRSVPMutation) InviteeIDs() (ids []int) {
+	if id := m.invitee; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetInvitee resets all changes to the "invitee" edge.
+func (m *EventRSVPMutation) ResetInvitee() {
+	m.invitee = nil
+	m.clearedinvitee = false
+}
+
+// Op returns the operation name.
+func (m *EventRSVPMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (EventRSVP).
+func (m *EventRSVPMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *EventRSVPMutation) Fields() []string {
+	fields := make([]string, 0, 0)
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *EventRSVPMutation) Field(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *EventRSVPMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, fmt.Errorf("unknown EventRSVP field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EventRSVPMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown EventRSVP field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *EventRSVPMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *EventRSVPMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EventRSVPMutation) AddField(name string, value ent.Value) error {
+	return fmt.Errorf("unknown EventRSVP numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *EventRSVPMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *EventRSVPMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *EventRSVPMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown EventRSVP nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *EventRSVPMutation) ResetField(name string) error {
+	return fmt.Errorf("unknown EventRSVP field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *EventRSVPMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.event != nil {
+		edges = append(edges, eventrsvp.EdgeEvent)
+	}
+	if m.invitee != nil {
+		edges = append(edges, eventrsvp.EdgeInvitee)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *EventRSVPMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case eventrsvp.EdgeEvent:
+		if id := m.event; id != nil {
+			return []ent.Value{*id}
+		}
+	case eventrsvp.EdgeInvitee:
+		if id := m.invitee; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *EventRSVPMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *EventRSVPMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *EventRSVPMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedevent {
+		edges = append(edges, eventrsvp.EdgeEvent)
+	}
+	if m.clearedinvitee {
+		edges = append(edges, eventrsvp.EdgeInvitee)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *EventRSVPMutation) EdgeCleared(name string) bool {
+	switch name {
+	case eventrsvp.EdgeEvent:
+		return m.clearedevent
+	case eventrsvp.EdgeInvitee:
+		return m.clearedinvitee
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *EventRSVPMutation) ClearEdge(name string) error {
+	switch name {
+	case eventrsvp.EdgeEvent:
+		m.ClearEvent()
+		return nil
+	case eventrsvp.EdgeInvitee:
+		m.ClearInvitee()
+		return nil
+	}
+	return fmt.Errorf("unknown EventRSVP unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *EventRSVPMutation) ResetEdge(name string) error {
+	switch name {
+	case eventrsvp.EdgeEvent:
+		m.ResetEvent()
+		return nil
+	case eventrsvp.EdgeInvitee:
+		m.ResetInvitee()
+		return nil
+	}
+	return fmt.Errorf("unknown EventRSVP edge %s", name)
+}
 
 // InviteeMutation represents an operation that mutates the Invitee nodes in the graph.
 type InviteeMutation struct {
@@ -48,6 +784,9 @@ type InviteeMutation struct {
 	address_country     *string
 	rsvp_response       *bool
 	clearedFields       map[string]struct{}
+	events              map[int]struct{}
+	removedevents       map[int]struct{}
+	clearedevents       bool
 	party               *int
 	clearedparty        bool
 	done                bool
@@ -817,6 +1556,59 @@ func (m *InviteeMutation) ResetRsvpResponse() {
 	delete(m.clearedFields, invitee.FieldRsvpResponse)
 }
 
+// AddEventIDs adds the "events" edge to the EventRSVP entity by ids.
+func (m *InviteeMutation) AddEventIDs(ids ...int) {
+	if m.events == nil {
+		m.events = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.events[ids[i]] = struct{}{}
+	}
+}
+
+// ClearEvents clears the "events" edge to the EventRSVP entity.
+func (m *InviteeMutation) ClearEvents() {
+	m.clearedevents = true
+}
+
+// EventsCleared reports if the "events" edge to the EventRSVP entity was cleared.
+func (m *InviteeMutation) EventsCleared() bool {
+	return m.clearedevents
+}
+
+// RemoveEventIDs removes the "events" edge to the EventRSVP entity by IDs.
+func (m *InviteeMutation) RemoveEventIDs(ids ...int) {
+	if m.removedevents == nil {
+		m.removedevents = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.removedevents[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedEvents returns the removed IDs of the "events" edge to the EventRSVP entity.
+func (m *InviteeMutation) RemovedEventsIDs() (ids []int) {
+	for id := range m.removedevents {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// EventsIDs returns the "events" edge IDs in the mutation.
+func (m *InviteeMutation) EventsIDs() (ids []int) {
+	for id := range m.events {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetEvents resets all changes to the "events" edge.
+func (m *InviteeMutation) ResetEvents() {
+	m.events = nil
+	m.clearedevents = false
+	m.removedevents = nil
+}
+
 // SetPartyID sets the "party" edge to the InviteeParty entity by id.
 func (m *InviteeMutation) SetPartyID(id int) {
 	m.party = &id
@@ -827,7 +1619,7 @@ func (m *InviteeMutation) ClearParty() {
 	m.clearedparty = true
 }
 
-// PartyCleared returns if the "party" edge to the InviteeParty entity was cleared.
+// PartyCleared reports if the "party" edge to the InviteeParty entity was cleared.
 func (m *InviteeMutation) PartyCleared() bool {
 	return m.clearedparty
 }
@@ -1276,7 +2068,10 @@ func (m *InviteeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *InviteeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.events != nil {
+		edges = append(edges, invitee.EdgeEvents)
+	}
 	if m.party != nil {
 		edges = append(edges, invitee.EdgeParty)
 	}
@@ -1287,6 +2082,12 @@ func (m *InviteeMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *InviteeMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case invitee.EdgeEvents:
+		ids := make([]ent.Value, 0, len(m.events))
+		for id := range m.events {
+			ids = append(ids, id)
+		}
+		return ids
 	case invitee.EdgeParty:
 		if id := m.party; id != nil {
 			return []ent.Value{*id}
@@ -1297,7 +2098,10 @@ func (m *InviteeMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *InviteeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removedevents != nil {
+		edges = append(edges, invitee.EdgeEvents)
+	}
 	return edges
 }
 
@@ -1305,13 +2109,22 @@ func (m *InviteeMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *InviteeMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case invitee.EdgeEvents:
+		ids := make([]ent.Value, 0, len(m.removedevents))
+		for id := range m.removedevents {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *InviteeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.clearedevents {
+		edges = append(edges, invitee.EdgeEvents)
+	}
 	if m.clearedparty {
 		edges = append(edges, invitee.EdgeParty)
 	}
@@ -1322,6 +2135,8 @@ func (m *InviteeMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *InviteeMutation) EdgeCleared(name string) bool {
 	switch name {
+	case invitee.EdgeEvents:
+		return m.clearedevents
 	case invitee.EdgeParty:
 		return m.clearedparty
 	}
@@ -1343,6 +2158,9 @@ func (m *InviteeMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *InviteeMutation) ResetEdge(name string) error {
 	switch name {
+	case invitee.EdgeEvents:
+		m.ResetEvents()
+		return nil
 	case invitee.EdgeParty:
 		m.ResetParty()
 		return nil
@@ -1533,7 +2351,7 @@ func (m *InviteePartyMutation) ClearInvitees() {
 	m.clearedinvitees = true
 }
 
-// InviteesCleared returns if the "invitees" edge to the Invitee entity was cleared.
+// InviteesCleared reports if the "invitees" edge to the Invitee entity was cleared.
 func (m *InviteePartyMutation) InviteesCleared() bool {
 	return m.clearedinvitees
 }

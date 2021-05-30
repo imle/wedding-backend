@@ -42,7 +42,12 @@ var ImportGuestList = cli.Command{
 			}
 		}
 
-		client, err := ent.Open("postgres", getPgConnectionString(), ent.Log(log.Println))
+		config, err := ProvideEntConfig()
+		if err != nil {
+			return err
+		}
+
+		client, err := ent.Open("postgres", config.ConnectionString, ent.Log(log.Println))
 		if err != nil {
 			return err
 		}

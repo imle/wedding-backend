@@ -9,6 +9,8 @@ import (
 
 	"wedding/ent/migrate"
 
+	"wedding/ent/event"
+	"wedding/ent/eventrsvp"
 	"wedding/ent/invitee"
 	"wedding/ent/inviteeparty"
 
@@ -22,6 +24,10 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Event is the client for interacting with the Event builders.
+	Event *EventClient
+	// EventRSVP is the client for interacting with the EventRSVP builders.
+	EventRSVP *EventRSVPClient
 	// Invitee is the client for interacting with the Invitee builders.
 	Invitee *InviteeClient
 	// InviteeParty is the client for interacting with the InviteeParty builders.
@@ -39,6 +45,8 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Event = NewEventClient(c.config)
+	c.EventRSVP = NewEventRSVPClient(c.config)
 	c.Invitee = NewInviteeClient(c.config)
 	c.InviteeParty = NewInviteePartyClient(c.config)
 }
@@ -74,6 +82,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:          ctx,
 		config:       cfg,
+		Event:        NewEventClient(cfg),
+		EventRSVP:    NewEventRSVPClient(cfg),
 		Invitee:      NewInviteeClient(cfg),
 		InviteeParty: NewInviteePartyClient(cfg),
 	}, nil
@@ -94,6 +104,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
 		config:       cfg,
+		Event:        NewEventClient(cfg),
+		EventRSVP:    NewEventRSVPClient(cfg),
 		Invitee:      NewInviteeClient(cfg),
 		InviteeParty: NewInviteePartyClient(cfg),
 	}, nil
@@ -102,7 +114,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Invitee.
+//		Event.
 //		Query().
 //		Count(ctx)
 //
@@ -125,8 +137,238 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Event.Use(hooks...)
+	c.EventRSVP.Use(hooks...)
 	c.Invitee.Use(hooks...)
 	c.InviteeParty.Use(hooks...)
+}
+
+// EventClient is a client for the Event schema.
+type EventClient struct {
+	config
+}
+
+// NewEventClient returns a client for the Event from the given config.
+func NewEventClient(c config) *EventClient {
+	return &EventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `event.Hooks(f(g(h())))`.
+func (c *EventClient) Use(hooks ...Hook) {
+	c.hooks.Event = append(c.hooks.Event, hooks...)
+}
+
+// Create returns a create builder for Event.
+func (c *EventClient) Create() *EventCreate {
+	mutation := newEventMutation(c.config, OpCreate)
+	return &EventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Event entities.
+func (c *EventClient) CreateBulk(builders ...*EventCreate) *EventCreateBulk {
+	return &EventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Event.
+func (c *EventClient) Update() *EventUpdate {
+	mutation := newEventMutation(c.config, OpUpdate)
+	return &EventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EventClient) UpdateOne(e *Event) *EventUpdateOne {
+	mutation := newEventMutation(c.config, OpUpdateOne, withEvent(e))
+	return &EventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EventClient) UpdateOneID(id int) *EventUpdateOne {
+	mutation := newEventMutation(c.config, OpUpdateOne, withEventID(id))
+	return &EventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Event.
+func (c *EventClient) Delete() *EventDelete {
+	mutation := newEventMutation(c.config, OpDelete)
+	return &EventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EventClient) DeleteOne(e *Event) *EventDeleteOne {
+	return c.DeleteOneID(e.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EventClient) DeleteOneID(id int) *EventDeleteOne {
+	builder := c.Delete().Where(event.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EventDeleteOne{builder}
+}
+
+// Query returns a query builder for Event.
+func (c *EventClient) Query() *EventQuery {
+	return &EventQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Event entity by its id.
+func (c *EventClient) Get(ctx context.Context, id int) (*Event, error) {
+	return c.Query().Where(event.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EventClient) GetX(ctx context.Context, id int) *Event {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRsvps queries the rsvps edge of a Event.
+func (c *EventClient) QueryRsvps(e *Event) *EventRSVPQuery {
+	query := &EventRSVPQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(eventrsvp.Table, eventrsvp.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.RsvpsTable, event.RsvpsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EventClient) Hooks() []Hook {
+	return c.hooks.Event
+}
+
+// EventRSVPClient is a client for the EventRSVP schema.
+type EventRSVPClient struct {
+	config
+}
+
+// NewEventRSVPClient returns a client for the EventRSVP from the given config.
+func NewEventRSVPClient(c config) *EventRSVPClient {
+	return &EventRSVPClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `eventrsvp.Hooks(f(g(h())))`.
+func (c *EventRSVPClient) Use(hooks ...Hook) {
+	c.hooks.EventRSVP = append(c.hooks.EventRSVP, hooks...)
+}
+
+// Create returns a create builder for EventRSVP.
+func (c *EventRSVPClient) Create() *EventRSVPCreate {
+	mutation := newEventRSVPMutation(c.config, OpCreate)
+	return &EventRSVPCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EventRSVP entities.
+func (c *EventRSVPClient) CreateBulk(builders ...*EventRSVPCreate) *EventRSVPCreateBulk {
+	return &EventRSVPCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EventRSVP.
+func (c *EventRSVPClient) Update() *EventRSVPUpdate {
+	mutation := newEventRSVPMutation(c.config, OpUpdate)
+	return &EventRSVPUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EventRSVPClient) UpdateOne(er *EventRSVP) *EventRSVPUpdateOne {
+	mutation := newEventRSVPMutation(c.config, OpUpdateOne, withEventRSVP(er))
+	return &EventRSVPUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EventRSVPClient) UpdateOneID(id int) *EventRSVPUpdateOne {
+	mutation := newEventRSVPMutation(c.config, OpUpdateOne, withEventRSVPID(id))
+	return &EventRSVPUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EventRSVP.
+func (c *EventRSVPClient) Delete() *EventRSVPDelete {
+	mutation := newEventRSVPMutation(c.config, OpDelete)
+	return &EventRSVPDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EventRSVPClient) DeleteOne(er *EventRSVP) *EventRSVPDeleteOne {
+	return c.DeleteOneID(er.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EventRSVPClient) DeleteOneID(id int) *EventRSVPDeleteOne {
+	builder := c.Delete().Where(eventrsvp.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EventRSVPDeleteOne{builder}
+}
+
+// Query returns a query builder for EventRSVP.
+func (c *EventRSVPClient) Query() *EventRSVPQuery {
+	return &EventRSVPQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EventRSVP entity by its id.
+func (c *EventRSVPClient) Get(ctx context.Context, id int) (*EventRSVP, error) {
+	return c.Query().Where(eventrsvp.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EventRSVPClient) GetX(ctx context.Context, id int) *EventRSVP {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEvent queries the event edge of a EventRSVP.
+func (c *EventRSVPClient) QueryEvent(er *EventRSVP) *EventQuery {
+	query := &EventQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := er.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(eventrsvp.Table, eventrsvp.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, eventrsvp.EventTable, eventrsvp.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(er.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInvitee queries the invitee edge of a EventRSVP.
+func (c *EventRSVPClient) QueryInvitee(er *EventRSVP) *InviteeQuery {
+	query := &InviteeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := er.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(eventrsvp.Table, eventrsvp.FieldID, id),
+			sqlgraph.To(invitee.Table, invitee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, eventrsvp.InviteeTable, eventrsvp.InviteeColumn),
+		)
+		fromV = sqlgraph.Neighbors(er.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EventRSVPClient) Hooks() []Hook {
+	return c.hooks.EventRSVP
 }
 
 // InviteeClient is a client for the Invitee schema.
@@ -195,7 +437,9 @@ func (c *InviteeClient) DeleteOneID(id int) *InviteeDeleteOne {
 
 // Query returns a query builder for Invitee.
 func (c *InviteeClient) Query() *InviteeQuery {
-	return &InviteeQuery{config: c.config}
+	return &InviteeQuery{
+		config: c.config,
+	}
 }
 
 // Get returns a Invitee entity by its id.
@@ -210,6 +454,22 @@ func (c *InviteeClient) GetX(ctx context.Context, id int) *Invitee {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryEvents queries the events edge of a Invitee.
+func (c *InviteeClient) QueryEvents(i *Invitee) *EventRSVPQuery {
+	query := &EventRSVPQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := i.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(invitee.Table, invitee.FieldID, id),
+			sqlgraph.To(eventrsvp.Table, eventrsvp.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, invitee.EventsTable, invitee.EventsColumn),
+		)
+		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // QueryParty queries the party edge of a Invitee.
@@ -299,7 +559,9 @@ func (c *InviteePartyClient) DeleteOneID(id int) *InviteePartyDeleteOne {
 
 // Query returns a query builder for InviteeParty.
 func (c *InviteePartyClient) Query() *InviteePartyQuery {
-	return &InviteePartyQuery{config: c.config}
+	return &InviteePartyQuery{
+		config: c.config,
+	}
 }
 
 // Get returns a InviteeParty entity by its id.

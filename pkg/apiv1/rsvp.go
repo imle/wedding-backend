@@ -1,4 +1,4 @@
-package server
+package apiv1
 
 import (
 	"net/http"
@@ -6,29 +6,36 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	log "github.com/sirupsen/logrus"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 
 	"wedding/ent"
 	"wedding/ent/invitee"
 	"wedding/ent/inviteeparty"
 )
 
-type APIv1 struct {
+type RSVP struct {
 	database *ent.Client
+	tracer   trace.Tracer
 }
 
-func RegisterAPIv1(database *ent.Client, singular *gin.RouterGroup, plural *gin.RouterGroup) *APIv1 {
-	api := &APIv1{
+func NewRSVP(database *ent.Client) *RSVP {
+	return &RSVP{
 		database: database,
+		tracer:   otel.Tracer("paperfree/apiv1"),
 	}
+}
 
+func (api *RSVP) Register(singular *gin.RouterGroup, plural *gin.RouterGroup) {
 	singular.GET("/:code", api.getInviteeByCode)
 	plural.GET("", api.queryByInviteeForParty)
 	plural.POST("", api.updateInviteeInfos)
-
-	return api
 }
 
-func (api *APIv1) queryByInviteeForParty(c *gin.Context) {
+func (api *RSVP) queryByInviteeForParty(c *gin.Context) {
+	ctx, span := api.tracer.Start(c.Request.Context(), "query-by-party")
+	defer span.End()
+
 	name := c.Query("query")
 
 	if len(name) < 3 {
@@ -45,20 +52,23 @@ func (api *APIv1) queryByInviteeForParty(c *gin.Context) {
 		WithInvitees(func(query *ent.InviteeQuery) {
 			query.Order(ent.Asc(invitee.FieldIsChild, invitee.FieldID))
 		}).
-		AllX(c)
+		AllX(ctx)
 
 	c.JSON(http.StatusOK, gin.H{
 		"matches": matches,
 	})
 }
 
-func (api *APIv1) getInviteeByCode(c *gin.Context) {
+func (api *RSVP) getInviteeByCode(c *gin.Context) {
+	ctx, span := api.tracer.Start(c.Request.Context(), "get-by-code")
+	defer span.End()
+
 	code := c.Param("code")
 
 	result, _ := api.database.InviteeParty.Query().
 		Where(inviteeparty.Code(code)).
 		WithInvitees().
-		Only(c)
+		Only(ctx)
 
 	if result == nil {
 		c.Status(http.StatusNotFound)
@@ -70,7 +80,10 @@ func (api *APIv1) getInviteeByCode(c *gin.Context) {
 	})
 }
 
-func (api *APIv1) updateInviteeInfos(c *gin.Context) {
+func (api *RSVP) updateInviteeInfos(c *gin.Context) {
+	ctx, span := api.tracer.Start(c.Request.Context(), "update-info")
+	defer span.End()
+
 	var invitees []*ent.Invitee
 
 	err := c.ShouldBindBodyWith(&invitees, binding.JSON)
@@ -79,7 +92,7 @@ func (api *APIv1) updateInviteeInfos(c *gin.Context) {
 		return
 	}
 
-	tx, err := api.database.Tx(c)
+	tx, err := api.database.Tx(ctx)
 	if err != nil {
 		c.Status(http.StatusInternalServerError)
 		log.Error(err)
@@ -100,7 +113,7 @@ func (api *APIv1) updateInviteeInfos(c *gin.Context) {
 				SetNillableAddressPostalCode(e.AddressPostalCode).
 				SetNillableAddressCountry(e.AddressCountry).
 				SetNillableRsvpResponse(e.RsvpResponse).
-				Save(c)
+				Save(ctx)
 			if err != nil {
 				c.Status(http.StatusInternalServerError)
 				log.Error(err)

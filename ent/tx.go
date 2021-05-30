@@ -12,6 +12,10 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// Event is the client for interacting with the Event builders.
+	Event *EventClient
+	// EventRSVP is the client for interacting with the EventRSVP builders.
+	EventRSVP *EventRSVPClient
 	// Invitee is the client for interacting with the Invitee builders.
 	Invitee *InviteeClient
 	// InviteeParty is the client for interacting with the InviteeParty builders.
@@ -151,6 +155,8 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.Event = NewEventClient(tx.config)
+	tx.EventRSVP = NewEventRSVPClient(tx.config)
 	tx.Invitee = NewInviteeClient(tx.config)
 	tx.InviteeParty = NewInviteePartyClient(tx.config)
 }
@@ -162,7 +168,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Invitee.QueryXXX(), the query will be executed
+// applies a query, for example: Event.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

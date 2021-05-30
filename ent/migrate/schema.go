@@ -3,11 +3,50 @@
 package migrate
 
 import (
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/dialect/sql/schema"
 	"entgo.io/ent/schema/field"
 )
 
 var (
+	// EventsColumns holds the columns for the "events" table.
+	EventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString},
+	}
+	// EventsTable holds the schema information for the "events" table.
+	EventsTable = &schema.Table{
+		Name:        "events",
+		Columns:     EventsColumns,
+		PrimaryKey:  []*schema.Column{EventsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+	}
+	// EventRsvpsColumns holds the columns for the "event_rsvps" table.
+	EventRsvpsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "event_rsvps", Type: field.TypeInt, Nullable: true},
+		{Name: "invitee_events", Type: field.TypeInt, Nullable: true},
+	}
+	// EventRsvpsTable holds the schema information for the "event_rsvps" table.
+	EventRsvpsTable = &schema.Table{
+		Name:       "event_rsvps",
+		Columns:    EventRsvpsColumns,
+		PrimaryKey: []*schema.Column{EventRsvpsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "event_rsvps_events_rsvps",
+				Columns:    []*schema.Column{EventRsvpsColumns[1]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "event_rsvps_invitees_events",
+				Columns:    []*schema.Column{EventRsvpsColumns[2]},
+				RefColumns: []*schema.Column{InviteesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// InviteesColumns holds the columns for the "invitees" table.
 	InviteesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -57,11 +96,18 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		EventsTable,
+		EventRsvpsTable,
 		InviteesTable,
 		InviteePartiesTable,
 	}
 )
 
 func init() {
+	EventRsvpsTable.ForeignKeys[0].RefTable = EventsTable
+	EventRsvpsTable.ForeignKeys[1].RefTable = InviteesTable
+	EventRsvpsTable.Annotation = &entsql.Annotation{
+		Table: "event_rsvps",
+	}
 	InviteesTable.ForeignKeys[0].RefTable = InviteePartiesTable
 }

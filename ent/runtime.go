@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"wedding/ent/event"
 	"wedding/ent/invitee"
 	"wedding/ent/inviteeparty"
 	"wedding/ent/schema"
@@ -12,6 +13,12 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	eventFields := schema.Event{}.Fields()
+	_ = eventFields
+	// eventDescName is the schema descriptor for name field.
+	eventDescName := eventFields[0].Descriptor()
+	// event.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	event.NameValidator = eventDescName.Validators[0].(func(string) error)
 	inviteeFields := schema.Invitee{}.Fields()
 	_ = inviteeFields
 	// inviteeDescName is the schema descriptor for name field.

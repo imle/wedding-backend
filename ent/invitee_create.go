@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"wedding/ent/eventrsvp"
 	"wedding/ent/invitee"
 	"wedding/ent/inviteeparty"
 
@@ -220,6 +221,21 @@ func (ic *InviteeCreate) SetNillableRsvpResponse(b *bool) *InviteeCreate {
 		ic.SetRsvpResponse(*b)
 	}
 	return ic
+}
+
+// AddEventIDs adds the "events" edge to the EventRSVP entity by IDs.
+func (ic *InviteeCreate) AddEventIDs(ids ...int) *InviteeCreate {
+	ic.mutation.AddEventIDs(ids...)
+	return ic
+}
+
+// AddEvents adds the "events" edges to the EventRSVP entity.
+func (ic *InviteeCreate) AddEvents(e ...*EventRSVP) *InviteeCreate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ic.AddEventIDs(ids...)
 }
 
 // SetPartyID sets the "party" edge to the InviteeParty entity by ID.
@@ -476,6 +492,25 @@ func (ic *InviteeCreate) createSpec() (*Invitee, *sqlgraph.CreateSpec) {
 			Column: invitee.FieldRsvpResponse,
 		})
 		_node.RsvpResponse = &value
+	}
+	if nodes := ic.mutation.EventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   invitee.EventsTable,
+			Columns: []string{invitee.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: eventrsvp.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ic.mutation.PartyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

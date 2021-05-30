@@ -22,6 +22,7 @@ type InviteePartyQuery struct {
 	config
 	limit      *int
 	offset     *int
+	unique     *bool
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.InviteeParty
@@ -47,6 +48,13 @@ func (ipq *InviteePartyQuery) Limit(limit int) *InviteePartyQuery {
 // Offset adds an offset step to the query.
 func (ipq *InviteePartyQuery) Offset(offset int) *InviteePartyQuery {
 	ipq.offset = &offset
+	return ipq
+}
+
+// Unique configures the query builder to filter duplicate records on query.
+// By default, unique is set to true, and can be disabled using this method.
+func (ipq *InviteePartyQuery) Unique(unique bool) *InviteePartyQuery {
+	ipq.unique = &unique
 	return ipq
 }
 
@@ -424,6 +432,9 @@ func (ipq *InviteePartyQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   ipq.sql,
 		Unique: true,
 	}
+	if unique := ipq.unique; unique != nil {
+		_spec.Unique = *unique
+	}
 	if fields := ipq.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, inviteeparty.FieldID)
@@ -449,7 +460,7 @@ func (ipq *InviteePartyQuery) querySpec() *sqlgraph.QuerySpec {
 	if ps := ipq.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
-				ps[i](selector, inviteeparty.ValidColumn)
+				ps[i](selector)
 			}
 		}
 	}
@@ -468,7 +479,7 @@ func (ipq *InviteePartyQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	for _, p := range ipq.order {
-		p(selector, inviteeparty.ValidColumn)
+		p(selector)
 	}
 	if offset := ipq.offset; offset != nil {
 		// limit is mandatory for offset clause. We start
@@ -730,13 +741,24 @@ func (ipgb *InviteePartyGroupBy) sqlScan(ctx context.Context, v interface{}) err
 }
 
 func (ipgb *InviteePartyGroupBy) sqlQuery() *sql.Selector {
-	selector := ipgb.sql
-	columns := make([]string, 0, len(ipgb.fields)+len(ipgb.fns))
-	columns = append(columns, ipgb.fields...)
+	selector := ipgb.sql.Select()
+	aggregation := make([]string, 0, len(ipgb.fns))
 	for _, fn := range ipgb.fns {
-		columns = append(columns, fn(selector, inviteeparty.ValidColumn))
+		aggregation = append(aggregation, fn(selector))
 	}
-	return selector.Select(columns...).GroupBy(ipgb.fields...)
+	// If no columns were selected in a custom aggregation function, the default
+	// selection is the fields used for "group-by", and the aggregation functions.
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(ipgb.fields)+len(ipgb.fns))
+		for _, f := range ipgb.fields {
+			columns = append(columns, selector.C(f))
+		}
+		for _, c := range aggregation {
+			columns = append(columns, c)
+		}
+		selector.Select(columns...)
+	}
+	return selector.GroupBy(selector.Columns(ipgb.fields...)...)
 }
 
 // InviteePartySelect is the builder for selecting fields of InviteeParty entities.

@@ -252,6 +252,7 @@ func (ipu *InviteePartyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 // InviteePartyUpdateOne is the builder for updating a single InviteeParty entity.
 type InviteePartyUpdateOne struct {
 	config
+	fields   []string
 	hooks    []Hook
 	mutation *InviteePartyMutation
 }
@@ -307,6 +308,13 @@ func (ipuo *InviteePartyUpdateOne) RemoveInvitees(i ...*Invitee) *InviteePartyUp
 		ids[j] = i[j].ID
 	}
 	return ipuo.RemoveInviteeIDs(ids...)
+}
+
+// Select allows selecting one or more fields (columns) of the returned entity.
+// The default is selecting all fields defined in the entity schema.
+func (ipuo *InviteePartyUpdateOne) Select(field string, fields ...string) *InviteePartyUpdateOne {
+	ipuo.fields = append([]string{field}, fields...)
+	return ipuo
 }
 
 // Save executes the query and returns the updated InviteeParty entity.
@@ -397,6 +405,18 @@ func (ipuo *InviteePartyUpdateOne) sqlSave(ctx context.Context) (_node *InviteeP
 		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing InviteeParty.ID for update")}
 	}
 	_spec.Node.ID.Value = id
+	if fields := ipuo.fields; len(fields) > 0 {
+		_spec.Node.Columns = make([]string, 0, len(fields))
+		_spec.Node.Columns = append(_spec.Node.Columns, inviteeparty.FieldID)
+		for _, f := range fields {
+			if !inviteeparty.ValidColumn(f) {
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			}
+			if f != inviteeparty.FieldID {
+				_spec.Node.Columns = append(_spec.Node.Columns, f)
+			}
+		}
+	}
 	if ps := ipuo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

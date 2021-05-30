@@ -37,10 +37,19 @@ const (
 	FieldAddressCountry = "address_country"
 	// FieldRsvpResponse holds the string denoting the rsvp_response field in the database.
 	FieldRsvpResponse = "rsvp_response"
+	// EdgeEvents holds the string denoting the events edge name in mutations.
+	EdgeEvents = "events"
 	// EdgeParty holds the string denoting the party edge name in mutations.
 	EdgeParty = "party"
 	// Table holds the table name of the invitee in the database.
 	Table = "invitees"
+	// EventsTable is the table the holds the events relation/edge.
+	EventsTable = "event_rsvps"
+	// EventsInverseTable is the table name for the EventRSVP entity.
+	// It exists in this package in order to avoid circular dependency with the "eventrsvp" package.
+	EventsInverseTable = "event_rsvps"
+	// EventsColumn is the table column denoting the events relation/edge.
+	EventsColumn = "invitee_events"
 	// PartyTable is the table the holds the party relation/edge.
 	PartyTable = "invitees"
 	// PartyInverseTable is the table name for the InviteeParty entity.

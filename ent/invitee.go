@@ -54,17 +54,28 @@ type Invitee struct {
 
 // InviteeEdges holds the relations/edges for other nodes in the graph.
 type InviteeEdges struct {
+	// Events holds the value of the events edge.
+	Events []*EventRSVP `json:"events,omitempty"`
 	// Party holds the value of the party edge.
 	Party *InviteeParty `json:"party,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
+}
+
+// EventsOrErr returns the Events value or an error if the edge
+// was not loaded in eager-loading.
+func (e InviteeEdges) EventsOrErr() ([]*EventRSVP, error) {
+	if e.loadedTypes[0] {
+		return e.Events, nil
+	}
+	return nil, &NotLoadedError{edge: "events"}
 }
 
 // PartyOrErr returns the Party value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e InviteeEdges) PartyOrErr() (*InviteeParty, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.Party == nil {
 			// The edge party was loaded in eager-loading,
 			// but was not found.
@@ -81,13 +92,13 @@ func (*Invitee) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case invitee.FieldIsChild, invitee.FieldHasPlusOne, invitee.FieldIsBridesmaid, invitee.FieldIsGroomsman, invitee.FieldRsvpResponse:
-			values[i] = &sql.NullBool{}
+			values[i] = new(sql.NullBool)
 		case invitee.FieldID:
-			values[i] = &sql.NullInt64{}
+			values[i] = new(sql.NullInt64)
 		case invitee.FieldName, invitee.FieldPlusOneName, invitee.FieldPhone, invitee.FieldEmail, invitee.FieldAddressLine1, invitee.FieldAddressLine2, invitee.FieldAddressCity, invitee.FieldAddressState, invitee.FieldAddressPostalCode, invitee.FieldAddressCountry:
-			values[i] = &sql.NullString{}
+			values[i] = new(sql.NullString)
 		case invitee.ForeignKeys[0]: // invitee_party_invitees
-			values[i] = &sql.NullInt64{}
+			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Invitee", columns[i])
 		}
@@ -220,6 +231,11 @@ func (i *Invitee) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryEvents queries the "events" edge of the Invitee entity.
+func (i *Invitee) QueryEvents() *EventRSVPQuery {
+	return (&InviteeClient{config: i.config}).QueryEvents(i)
 }
 
 // QueryParty queries the "party" edge of the Invitee entity.

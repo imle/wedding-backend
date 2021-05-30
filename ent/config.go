@@ -24,6 +24,8 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
+	Event        []ent.Hook
+	EventRSVP    []ent.Hook
 	Invitee      []ent.Hook
 	InviteeParty []ent.Hook
 }

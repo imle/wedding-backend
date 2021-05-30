@@ -13,8 +13,13 @@ var GenerateMigrations = cli.Command{
 	Name:      "gen-migrations",
 	ArgsUsage: "[> ./output.sql]",
 	Action: func(ctx *cli.Context) error {
+		config, err := ProvideEntConfig()
+		if err != nil {
+			return err
+		}
+
 		// Connect to db.
-		client, err := ent.Open("postgres", getPgConnectionString(), ent.Log(log.Println))
+		client, err := ent.Open("postgres", config.ConnectionString, ent.Log(log.Println))
 		if err != nil {
 			return err
 		}

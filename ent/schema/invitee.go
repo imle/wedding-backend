@@ -51,6 +51,8 @@ func (Invitee) Fields() []ent.Field {
 // Edges of the Invitee.
 func (Invitee) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("events", EventRSVP.Type),
+
 		edge.From("party", InviteeParty.Type).
 			Ref("invitees").
 			Unique(),

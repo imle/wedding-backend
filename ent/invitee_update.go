@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"fmt"
+	"wedding/ent/eventrsvp"
 	"wedding/ent/invitee"
 	"wedding/ent/inviteeparty"
 	"wedding/ent/predicate"
@@ -295,6 +296,21 @@ func (iu *InviteeUpdate) ClearRsvpResponse() *InviteeUpdate {
 	return iu
 }
 
+// AddEventIDs adds the "events" edge to the EventRSVP entity by IDs.
+func (iu *InviteeUpdate) AddEventIDs(ids ...int) *InviteeUpdate {
+	iu.mutation.AddEventIDs(ids...)
+	return iu
+}
+
+// AddEvents adds the "events" edges to the EventRSVP entity.
+func (iu *InviteeUpdate) AddEvents(e ...*EventRSVP) *InviteeUpdate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return iu.AddEventIDs(ids...)
+}
+
 // SetPartyID sets the "party" edge to the InviteeParty entity by ID.
 func (iu *InviteeUpdate) SetPartyID(id int) *InviteeUpdate {
 	iu.mutation.SetPartyID(id)
@@ -317,6 +333,27 @@ func (iu *InviteeUpdate) SetParty(i *InviteeParty) *InviteeUpdate {
 // Mutation returns the InviteeMutation object of the builder.
 func (iu *InviteeUpdate) Mutation() *InviteeMutation {
 	return iu.mutation
+}
+
+// ClearEvents clears all "events" edges to the EventRSVP entity.
+func (iu *InviteeUpdate) ClearEvents() *InviteeUpdate {
+	iu.mutation.ClearEvents()
+	return iu
+}
+
+// RemoveEventIDs removes the "events" edge to EventRSVP entities by IDs.
+func (iu *InviteeUpdate) RemoveEventIDs(ids ...int) *InviteeUpdate {
+	iu.mutation.RemoveEventIDs(ids...)
+	return iu
+}
+
+// RemoveEvents removes "events" edges to EventRSVP entities.
+func (iu *InviteeUpdate) RemoveEvents(e ...*EventRSVP) *InviteeUpdate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return iu.RemoveEventIDs(ids...)
 }
 
 // ClearParty clears the "party" edge to the InviteeParty entity.
@@ -581,6 +618,60 @@ func (iu *InviteeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: invitee.FieldRsvpResponse,
 		})
 	}
+	if iu.mutation.EventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   invitee.EventsTable,
+			Columns: []string{invitee.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: eventrsvp.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iu.mutation.RemovedEventsIDs(); len(nodes) > 0 && !iu.mutation.EventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   invitee.EventsTable,
+			Columns: []string{invitee.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: eventrsvp.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iu.mutation.EventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   invitee.EventsTable,
+			Columns: []string{invitee.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: eventrsvp.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if iu.mutation.PartyCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -630,6 +721,7 @@ func (iu *InviteeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 // InviteeUpdateOne is the builder for updating a single Invitee entity.
 type InviteeUpdateOne struct {
 	config
+	fields   []string
 	hooks    []Hook
 	mutation *InviteeMutation
 }
@@ -902,6 +994,21 @@ func (iuo *InviteeUpdateOne) ClearRsvpResponse() *InviteeUpdateOne {
 	return iuo
 }
 
+// AddEventIDs adds the "events" edge to the EventRSVP entity by IDs.
+func (iuo *InviteeUpdateOne) AddEventIDs(ids ...int) *InviteeUpdateOne {
+	iuo.mutation.AddEventIDs(ids...)
+	return iuo
+}
+
+// AddEvents adds the "events" edges to the EventRSVP entity.
+func (iuo *InviteeUpdateOne) AddEvents(e ...*EventRSVP) *InviteeUpdateOne {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return iuo.AddEventIDs(ids...)
+}
+
 // SetPartyID sets the "party" edge to the InviteeParty entity by ID.
 func (iuo *InviteeUpdateOne) SetPartyID(id int) *InviteeUpdateOne {
 	iuo.mutation.SetPartyID(id)
@@ -926,9 +1033,37 @@ func (iuo *InviteeUpdateOne) Mutation() *InviteeMutation {
 	return iuo.mutation
 }
 
+// ClearEvents clears all "events" edges to the EventRSVP entity.
+func (iuo *InviteeUpdateOne) ClearEvents() *InviteeUpdateOne {
+	iuo.mutation.ClearEvents()
+	return iuo
+}
+
+// RemoveEventIDs removes the "events" edge to EventRSVP entities by IDs.
+func (iuo *InviteeUpdateOne) RemoveEventIDs(ids ...int) *InviteeUpdateOne {
+	iuo.mutation.RemoveEventIDs(ids...)
+	return iuo
+}
+
+// RemoveEvents removes "events" edges to EventRSVP entities.
+func (iuo *InviteeUpdateOne) RemoveEvents(e ...*EventRSVP) *InviteeUpdateOne {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return iuo.RemoveEventIDs(ids...)
+}
+
 // ClearParty clears the "party" edge to the InviteeParty entity.
 func (iuo *InviteeUpdateOne) ClearParty() *InviteeUpdateOne {
 	iuo.mutation.ClearParty()
+	return iuo
+}
+
+// Select allows selecting one or more fields (columns) of the returned entity.
+// The default is selecting all fields defined in the entity schema.
+func (iuo *InviteeUpdateOne) Select(field string, fields ...string) *InviteeUpdateOne {
+	iuo.fields = append([]string{field}, fields...)
 	return iuo
 }
 
@@ -1015,6 +1150,18 @@ func (iuo *InviteeUpdateOne) sqlSave(ctx context.Context) (_node *Invitee, err e
 		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Invitee.ID for update")}
 	}
 	_spec.Node.ID.Value = id
+	if fields := iuo.fields; len(fields) > 0 {
+		_spec.Node.Columns = make([]string, 0, len(fields))
+		_spec.Node.Columns = append(_spec.Node.Columns, invitee.FieldID)
+		for _, f := range fields {
+			if !invitee.ValidColumn(f) {
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			}
+			if f != invitee.FieldID {
+				_spec.Node.Columns = append(_spec.Node.Columns, f)
+			}
+		}
+	}
 	if ps := iuo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -1192,6 +1339,60 @@ func (iuo *InviteeUpdateOne) sqlSave(ctx context.Context) (_node *Invitee, err e
 			Type:   field.TypeBool,
 			Column: invitee.FieldRsvpResponse,
 		})
+	}
+	if iuo.mutation.EventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   invitee.EventsTable,
+			Columns: []string{invitee.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: eventrsvp.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iuo.mutation.RemovedEventsIDs(); len(nodes) > 0 && !iuo.mutation.EventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   invitee.EventsTable,
+			Columns: []string{invitee.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: eventrsvp.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iuo.mutation.EventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   invitee.EventsTable,
+			Columns: []string{invitee.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: eventrsvp.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if iuo.mutation.PartyCleared() {
 		edge := &sqlgraph.EdgeSpec{
