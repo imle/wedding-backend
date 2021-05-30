@@ -159,7 +159,9 @@ func main() {
 
 			log.Info("server exited")
 
-			stopOtelProvider(shutdownCtx)
+			if stopOtelProvider != nil {
+				stopOtelProvider(shutdownCtx)
+			}
 
 			log.Info("tracing stopped")
 
