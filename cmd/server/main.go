@@ -25,9 +25,8 @@ var (
 	environment   wedding.Environment
 	devOrigin     cli.StringSlice
 
-	redisUrl           string
-	redisDb            int
-	redisSessionSecret string
+	redisUrl string
+	redisDb  int
 
 	otelCollectorEndpoint string
 	otelCollectorInsecure bool
@@ -81,12 +80,6 @@ func main() {
 				Destination: &redisDb,
 				EnvVars:     []string{"WEDDING_REDIS_DB"},
 				Value:       0,
-			},
-			&cli.StringFlag{
-				Name:        "redis-session-secret",
-				Destination: &redisSessionSecret,
-				EnvVars:     []string{"WEDDING_REDIS_SESSION_SECRET"},
-				Value:       "",
 			},
 			&cli.StringFlag{
 				Name:        "otel-collector-endpoint",

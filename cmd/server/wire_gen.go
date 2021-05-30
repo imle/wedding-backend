@@ -23,11 +23,6 @@ import (
 func InitializeServer(contextContext context.Context) (*http.Server, func(), error) {
 	config := ProvideServerConfig()
 	monitor := health.NewMonitor()
-	options := ProvideRedisOptions()
-	store, err := server.ProvideRedisSessionStore(options, config)
-	if err != nil {
-		return nil, nil, err
-	}
 	entConfig, err := ProvideEntConfig()
 	if err != nil {
 		return nil, nil, err
@@ -37,7 +32,7 @@ func InitializeServer(contextContext context.Context) (*http.Server, func(), err
 		return nil, nil, err
 	}
 	rsvp := apiv1.NewRSVP(client)
-	engine, err := server.ProvideEngine(config, monitor, store, rsvp)
+	engine, err := server.ProvideEngine(config, monitor, rsvp)
 	if err != nil {
 		cleanup()
 		return nil, nil, err

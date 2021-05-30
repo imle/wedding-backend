@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	ginlogrus "github.com/toorop/gin-logrus"
@@ -16,7 +15,6 @@ import (
 func ProvideEngine(
 	cfg *Config,
 	hm *health.Monitor,
-	store sessions.Store,
 	rsvpApiV1 *apiv1.RSVP,
 ) (*gin.Engine, error) {
 	switch cfg.Environment {
@@ -46,8 +44,6 @@ func ProvideEngine(
 	engine.Use(otelgin.Middleware("wedding"))
 	// logrus middleware
 	engine.Use(ginlogrus.Logger(log.StandardLogger()))
-	// sessions middleware
-	engine.Use(sessions.Sessions("wedding", store))
 
 	// Setup CORS.
 	if gin.Mode() != gin.ReleaseMode {

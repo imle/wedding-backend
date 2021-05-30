@@ -9,10 +9,9 @@ import (
 )
 
 type Config struct {
-	Addr          string
-	DevOrigin     []string
-	Environment   wedding.Environment
-	SessionSecret string
+	Addr        string
+	DevOrigin   []string
+	Environment wedding.Environment
 }
 
 func ProvideHttpServer(engine *gin.Engine, cfg *Config) *http.Server {

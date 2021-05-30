@@ -16,13 +16,12 @@ import (
 
 func InitializeServer(_ context.Context) (*http.Server, func(), error) {
 	wire.Build(
-		ProvideRedisOptions,
+		//ProvideRedisOptions,
 		ProvideServerConfig,
 		ProvideEntConfig,
 		database.ProvideEntClient,
 		health.NewMonitor,
 		apiv1.NewRSVP,
-		server.ProvideRedisSessionStore,
 		server.ProvideEngine,
 		server.ProvideHttpServer,
 	)

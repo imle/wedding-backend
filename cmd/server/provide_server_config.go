@@ -6,9 +6,8 @@ import (
 
 func ProvideServerConfig() *server.Config {
 	return &server.Config{
-		Addr:          serverAddress,
-		Environment:   environment,
-		DevOrigin:     devOrigin.Value(),
-		SessionSecret: redisSessionSecret,
+		Addr:        serverAddress,
+		Environment: environment,
+		DevOrigin:   devOrigin.Value(),
 	}
 }
